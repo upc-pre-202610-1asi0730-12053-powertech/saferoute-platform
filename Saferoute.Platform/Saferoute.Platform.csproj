@@ -27,7 +27,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="TripExecutionAndMonitoring\" />
+      <Folder Include="TripExecutionAndMonitoring\domain\model\entities\" />
+      <Folder Include="TripExecutionAndMonitoring\domain\model\events\" />
+      <Folder Include="TripExecutionAndMonitoring\domain\model\queries\" />
     </ItemGroup>
 
 </Project>
