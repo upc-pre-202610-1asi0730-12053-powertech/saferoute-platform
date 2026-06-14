@@ -1,0 +1,109 @@
+@startuml
+skinparam monochrome false
+
+package "SafeRoute.Trip.Domain.Model.Aggregates" {
+  entity "Trip" as TripPrincipal <<AggregateRoot>> {
+    -id: TripId
+    -organizationId: OrganizationId
+    -routeId: RouteId
+    -driverId: DriverId
+    -tripState: TripState
+    -startTime: DateTime
+    -endTime: DateTime
+    -attendances: List<Attendance>
+    -incidents: List<Incident>
+    +Start(): void
+    +Complete(): void
+    +RecordBoarding(childId: ChildId, state: BoardingState): void
+    +ReportIncident(description: IncidentDescription): void
+    +GetAttendanceSummary(): List<Attendance>
+    +GetIncidentLog(): List<Incident>
+    +IsInProgress(): bool
+  }
+}
+
+package "SafeRoute.Trip.Domain.Model.Entities" {
+  entity "Attendance" as Attendance <<Entity>> {
+    -id: AttendanceId
+    -childId: ChildId
+    -boardingState: BoardingState
+    -boardedAt: DateTime
+    +UpdateBoardingState(state: BoardingState): void
+    +IsBoarded(): bool
+    +GetBoardingTime(): DateTime
+  }
+
+  entity "Incident" as Incident <<Entity>> {
+    -id: IncidentId
+    -description: IncidentDescription
+    -reportedAt: DateTime
+    +Report(): void
+    +GetDescription(): string
+    +GetReportedAt(): DateTime
+  }
+}
+
+package "SafeRoute.Trip.Domain.Model.ValueObjects" {
+  class "AttendanceId" as AttendanceId <<ValueObject>> {
+    -value: Guid
+    +New(): AttendanceId
+    +ToString(): string
+  }
+
+  class "IncidentId" as IncidentId <<ValueObject>> {
+    -value: Guid
+    +New(): IncidentId
+    +ToString(): string
+  }
+
+  class "TripState" as TripState <<ValueObject>> {
+    -value: string
+    +IsPending(): bool
+    +IsInProgress(): bool
+    +IsCompleted(): bool
+    +ToString(): string
+  }
+
+  class "BoardingState" as BoardingState <<ValueObject>> {
+    -value: string
+    +IsBoarded(): bool
+    +IsMissing(): bool
+    +IsOmitted(): bool
+    +ToString(): string
+  }
+
+  class "IncidentDescription" as IncidentDescription <<ValueObject>> {
+    -value: string
+    +IsValid(): bool
+    +ToString(): string
+  }
+}
+
+' ─── Shared ──────────────────────────────────────────────────────────────────
+package "SafeRoute.Shared.Domain.Model.ValueObjects" {
+  class "OrganizationId" as SharedOrganizationId <<ValueObject>> {
+  }
+  class "TripId" as SharedTripId <<ValueObject>> {
+  }
+  class "RouteId" as SharedRouteId <<ValueObject>> {
+  }
+  class "DriverId" as SharedDriverId <<ValueObject>> {
+  }
+  class "ChildId" as SharedChildId <<ValueObject>> {
+  }
+}
+
+TripPrincipal "1" --> "1" SharedTripId : identified by
+TripPrincipal "1" --> "1" SharedOrganizationId : belongs to
+TripPrincipal "1" --> "1" SharedRouteId : belongs to
+TripPrincipal "1" --> "1" SharedDriverId : operated by
+TripPrincipal "1" --> "1" TripState : has
+TripPrincipal "1" *--> "0..*" Attendance : contains
+TripPrincipal "1" *--> "0..*" Incident : contains
+Attendance "1" --> "1" AttendanceId : identified by
+Attendance "1" --> "1" SharedChildId : tracks
+Attendance "1" --> "1" BoardingState : has
+Incident "1" --> "1" IncidentId : identified by
+Incident "1" --> "1" IncidentDescription : described by
+
+@enduml

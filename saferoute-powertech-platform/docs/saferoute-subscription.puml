@@ -1,0 +1,90 @@
+@startuml
+skinparam monochrome false
+
+package "SafeRoute.Subscription.Domain.Model.Aggregates" {
+  entity "Subscription" as SubscriptionPrincipal <<AggregateRoot>> {
+    -id: SubscriptionId
+    -organizationId: OrganizationId
+    -planId: PlanId
+    -state: SubscriptionState
+    -startDate: DateTime
+    -endDate: DateTime
+    +Activate(): void
+    +Upgrade(planId: PlanId): void
+    +Cancel(): void
+    +IsActive(): bool
+    +GetPlanId(): PlanId
+    +GetRemainingDays(): int
+  }
+
+  entity "Plan" as Plan <<AggregateRoot>> {
+    -id: PlanId
+    -planTier: PlanTier
+    -routeQuota: RouteQuota
+    -driverQuota: DriverQuota
+    -price: decimal
+    +GetPlanName(): string
+    +GetRouteLimit(): int
+    +GetDriverLimit(): int
+    +IsWithinRouteQuota(current: int): bool
+    +IsWithinDriverQuota(current: int): bool
+  }
+}
+
+package "SafeRoute.Subscription.Domain.Model.ValueObjects" {
+  class "SubscriptionState" as SubscriptionState <<ValueObject>> {
+    -value: string
+    +IsActive(): bool
+    +IsExpired(): bool
+    +IsCancelled(): bool
+    +ToString(): string
+  }
+
+  class "PlanTier" as PlanTier <<ValueObject>> {
+    -value: string
+    +IsBasic(): bool
+    +IsIntermediate(): bool
+    +IsComplete(): bool
+    +ToString(): string
+  }
+
+  class "RouteQuota" as RouteQuota <<ValueObject>> {
+    -maxRoutes: int
+    +IsWithinLimit(current: int): bool
+    +GetMaxRoutes(): int
+  }
+
+  class "DriverQuota" as DriverQuota <<ValueObject>> {
+    -maxDrivers: int
+    +IsWithinLimit(current: int): bool
+    +GetMaxDrivers(): int
+  }
+}
+
+' ─── Shared ──────────────────────────────────────────────────────────────────
+package "SafeRoute.Shared.Domain.Model.ValueObjects" {
+  class "OrganizationId" as SharedOrganizationId <<ValueObject>> {
+  }
+  class "SubscriptionId" as SharedSubscriptionId <<ValueObject>> {
+  }
+  class "PlanId" as SharedPlanId <<ValueObject>> {
+  }
+}
+
+' ─── Referencias a otros Bounded Contexts ────────────────────────────────────
+package "SafeRoute.IAM.Domain.Model.Aggregates" {
+  entity "User" as User <<AggregateRoot>> {
+  }
+}
+
+SubscriptionPrincipal "1" --> "1" SharedSubscriptionId : identified by
+SubscriptionPrincipal "1" --> "1" SharedOrganizationId : belongs to
+SubscriptionPrincipal "1" --> "1" SharedPlanId : references
+SubscriptionPrincipal "1" --> "1" SubscriptionState : has
+SubscriptionPrincipal "1" --> "1" User : owned by
+Plan "1" --> "1" SharedPlanId : identified by
+Plan "1" --> "1" PlanTier : categorized by
+Plan "1" --> "1" RouteQuota : limits
+Plan "1" --> "1" DriverQuota : limits
+
+@enduml

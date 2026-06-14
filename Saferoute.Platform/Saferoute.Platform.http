@@ -1,6 +1,0 @@
-@Saferoute.Platform_HostAddress = http://localhost:5134
-
-GET {{Saferoute.Platform_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
