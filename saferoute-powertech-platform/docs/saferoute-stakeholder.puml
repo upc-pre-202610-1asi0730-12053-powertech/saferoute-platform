@@ -1,0 +1,130 @@
+@startuml
+skinparam monochrome false
+
+package "SafeRoute.Stakeholder.Domain.Model.Aggregates" {
+  entity "Parent" as Parent <<AggregateRoot>> {
+    -id: ParentId
+    -organizationId: OrganizationId
+    -userId: UserId
+    -fullName: FullName
+    -email: Email
+    -phoneNumber: PhoneNumber
+    -children: List<Child>
+    +AddChild(child: Child): void
+    +RemoveChild(childId: ChildId): void
+    +GetChildren(): List<Child>
+    +GetFullName(): string
+    +GetEmail(): string
+  }
+}
+
+package "SafeRoute.Stakeholder.Domain.Model.Entities" {
+  entity "Driver" as Driver <<Entity>> {
+    -id: DriverId
+    -organizationId: OrganizationId
+    -userId: UserId
+    -fullName: FullName
+    -email: Email
+    -phoneNumber: PhoneNumber
+    -licenseNumber: LicenseNumber
+    +IsAvailable(): bool
+    +GetFullName(): string
+    +GetLicenseNumber(): string
+    +UpdatePhoneNumber(phone: PhoneNumber): void
+  }
+
+  entity "Child" as Child <<Entity>> {
+    -id: ChildId
+    -fullName: FullName
+    -age: int
+    -enrollmentState: ChildEnrollmentState
+    +Enroll(): void
+    +Unenroll(): void
+    +IsEnrolled(): bool
+    +GetFullName(): string
+  }
+
+  entity "StudentGroup" as StudentGroup <<Entity>> {
+    -id: StudentGroupId
+    -organizationId: OrganizationId
+    -name: string
+    -children: List<ChildId>
+    +AddChild(childId: ChildId): void
+    +RemoveChild(childId: ChildId): void
+    +Finalize(): void
+    +GetChildCount(): int
+    +IsFinalized(): bool
+  }
+}
+
+package "SafeRoute.Stakeholder.Domain.Model.ValueObjects" {
+  class "StudentGroupId" as StudentGroupId <<ValueObject>> {
+    -value: Guid
+    +New(): StudentGroupId
+    +ToString(): string
+  }
+
+  class "Email" as Email <<ValueObject>> {
+    -value: string
+    +IsValid(): bool
+    +ToString(): string
+  }
+
+  class "PhoneNumber" as PhoneNumber <<ValueObject>> {
+    -value: string
+    +IsValid(): bool
+    +ToString(): string
+  }
+
+  class "LicenseNumber" as LicenseNumber <<ValueObject>> {
+    -value: string
+    +IsValid(): bool
+    +ToString(): string
+  }
+
+  class "ChildEnrollmentState" as ChildEnrollmentState <<ValueObject>> {
+    -value: string
+    +IsActive(): bool
+    +IsInactive(): bool
+    +ToString(): string
+  }
+}
+
+' ─── Shared ──────────────────────────────────────────────────────────────────
+package "SafeRoute.Shared.Domain.Model.ValueObjects" {
+  class "OrganizationId" as SharedOrganizationId <<ValueObject>> {
+  }
+  class "UserId" as SharedUserId <<ValueObject>> {
+  }
+  class "ParentId" as SharedParentId <<ValueObject>> {
+  }
+  class "DriverId" as SharedDriverId <<ValueObject>> {
+  }
+  class "ChildId" as SharedChildId <<ValueObject>> {
+  }
+  class "FullName" as SharedFullName <<ValueObject>> {
+  }
+}
+
+Parent "1" --> "1" SharedParentId : identified by
+Parent "1" --> "1" SharedOrganizationId : belongs to
+Parent "1" --> "1" SharedUserId : linked to
+Parent "1" --> "1" SharedFullName : has
+Parent "1" --> "1" Email : has
+Parent "1" --> "1" PhoneNumber : has
+Parent "1" *--> "1..*" Child : has
+Driver "1" --> "1" SharedDriverId : identified by
+Driver "1" --> "1" SharedOrganizationId : belongs to
+Driver "1" --> "1" SharedUserId : linked to
+Driver "1" --> "1" SharedFullName : has
+Driver "1" --> "1" Email : has
+Driver "1" --> "1" PhoneNumber : has
+Driver "1" --> "1" LicenseNumber : has
+Child "1" --> "1" SharedChildId : identified by
+Child "1" --> "1" SharedFullName : has
+Child "1" --> "1" ChildEnrollmentState : has
+StudentGroup "1" --> "1" StudentGroupId : identified by
+StudentGroup "1" --> "1" SharedOrganizationId : belongs to
+StudentGroup "1" --> "1..*" SharedChildId : groups
+
+@enduml

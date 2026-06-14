@@ -1,0 +1,6 @@
+@Powertech.Platform_HostAddress = http://localhost:5087
+
+GET {{Powertech.Platform_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

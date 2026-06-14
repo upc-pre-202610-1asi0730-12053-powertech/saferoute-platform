@@ -1,0 +1,87 @@
+@startuml
+skinparam monochrome false
+
+package "SafeRoute.Shared.Domain.Model.ValueObjects" {
+
+  class "OrganizationId" as OrganizationId <<ValueObject>> {
+    -value: Guid
+    +New(): OrganizationId
+    +Equals(other: OrganizationId): bool
+    +ToString(): string
+  }
+
+  class "UserId" as UserId <<ValueObject>> {
+    -value: Guid
+    +New(): UserId
+    +Equals(other: UserId): bool
+    +ToString(): string
+  }
+
+  class "ParentId" as ParentId <<ValueObject>> {
+    -value: Guid
+    +New(): ParentId
+    +Equals(other: ParentId): bool
+    +ToString(): string
+  }
+
+  class "DriverId" as DriverId <<ValueObject>> {
+    -value: Guid
+    +New(): DriverId
+    +Equals(other: DriverId): bool
+    +ToString(): string
+  }
+
+  class "ChildId" as ChildId <<ValueObject>> {
+    -value: Guid
+    +New(): ChildId
+    +Equals(other: ChildId): bool
+    +ToString(): string
+  }
+
+  class "RouteId" as RouteId <<ValueObject>> {
+    -value: Guid
+    +New(): RouteId
+    +Equals(other: RouteId): bool
+    +ToString(): string
+  }
+
+  class "TripId" as TripId <<ValueObject>> {
+    -value: Guid
+    +New(): TripId
+    +Equals(other: TripId): bool
+    +ToString(): string
+  }
+
+  class "SubscriptionId" as SubscriptionId <<ValueObject>> {
+    -value: Guid
+    +New(): SubscriptionId
+    +Equals(other: SubscriptionId): bool
+    +ToString(): string
+  }
+
+  class "PlanId" as PlanId <<ValueObject>> {
+    -value: Guid
+    +New(): PlanId
+    +Equals(other: PlanId): bool
+    +ToString(): string
+  }
+
+  class "FullName" as FullName <<ValueObject>> {
+    -firstName: string
+    -lastName: string
+    +GetFullName(): string
+    +IsValid(): bool
+    +Equals(other: FullName): bool
+    +ToString(): string
+  }
+
+  class "Coordinates" as Coordinates <<ValueObject>> {
+    -latitude: double
+    -longitude: double
+    +IsValid(): bool
+    +Equals(other: Coordinates): bool
+    +ToString(): string
+  }
+}
+
+@enduml

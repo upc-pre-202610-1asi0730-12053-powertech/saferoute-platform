@@ -1,0 +1,99 @@
+@startuml
+skinparam monochrome false
+
+package "SafeRoute.IAM.Domain.Model.Aggregates" {
+  entity "Organization" as Organization <<AggregateRoot>> {
+    -id: OrganizationId
+    -name: OrganizationName
+    -status: OrganizationStatus
+    -createdAt: DateTime
+    +Create(name: OrganizationName): void
+    +Suspend(): void
+    +Activate(): void
+    +IsActive(): bool
+    +GetName(): string
+  }
+
+  entity "User" as User <<AggregateRoot>> {
+    -id: UserId
+    -organizationId: OrganizationId
+    -fullName: FullName
+    -email: Email
+    -passwordHash: PasswordHash
+    -role: Role
+    +Register(): void
+    +Authenticate(password: string): bool
+    +ChangeRole(role: Role): void
+    +GetFullName(): string
+    +GetEmail(): string
+  }
+}
+
+package "SafeRoute.IAM.Domain.Model.Entities" {
+  entity "Role" as Role <<Entity>> {
+    -id: int
+    -roleTier: RoleTier
+    +GetRoleName(): string
+    +IsAdmin(): bool
+    +IsDriver(): bool
+    +IsParent(): bool
+  }
+}
+
+package "SafeRoute.IAM.Domain.Model.ValueObjects" {
+  class "OrganizationName" as OrganizationName <<ValueObject>> {
+    -value: string
+    +IsValid(): bool
+    +ToString(): string
+  }
+
+  class "OrganizationStatus" as OrganizationStatus <<ValueObject>> {
+    -value: string
+    +IsActive(): bool
+    +IsSuspended(): bool
+    +ToString(): string
+  }
+
+  class "Email" as Email <<ValueObject>> {
+    -value: string
+    +IsValid(): bool
+    +ToString(): string
+  }
+
+  class "PasswordHash" as PasswordHash <<ValueObject>> {
+    -value: string
+    +Hash(password: string): PasswordHash
+    +Verify(password: string): bool
+  }
+
+  class "RoleTier" as RoleTier <<ValueObject>> {
+    -value: string
+    +IsAdmin(): bool
+    +IsDriver(): bool
+    +IsParent(): bool
+    +ToString(): string
+  }
+}
+
+' ─── Shared ──────────────────────────────────────────────────────────────────
+package "SafeRoute.Shared.Domain.Model.ValueObjects" {
+  class "OrganizationId" as SharedOrganizationId <<ValueObject>> {
+  }
+  class "UserId" as SharedUserId <<ValueObject>> {
+  }
+  class "FullName" as SharedFullName <<ValueObject>> {
+  }
+}
+
+Organization "1" --> "1" SharedOrganizationId : identified by
+Organization "1" --> "1" OrganizationName : has
+Organization "1" --> "1" OrganizationStatus : has
+User "1" --> "1" SharedUserId : identified by
+User "1" --> "1" SharedOrganizationId : belongs to
+User "1" --> "1" SharedFullName : has
+User "1" --> "1" Email : has
+User "1" --> "1" PasswordHash : secured by
+User "1" --> "1" Role : has
+Role "1" --> "1" RoleTier : categorized by
+
+@enduml
