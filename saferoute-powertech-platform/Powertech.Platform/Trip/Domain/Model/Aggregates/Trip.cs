@@ -1,4 +1,5 @@
 ﻿using Powertech.Platform.Shared.Domain.Model.ValueObjects;
+using Powertech.Platform.Trip.Domain.Model.Commands;
 using Powertech.Platform.Trip.Domain.Model.ValueObjects;
 
 namespace Powertech.Platform.Trip.Domain.Model.Aggregates;
@@ -45,6 +46,15 @@ public class Trip
         RouteId = routeId;
         DriverId = driverId;
         State = TripState.CreatePending();
+    }
+    
+    /// <summary>
+    ///     Creates a new trip from a <see cref="CreateTripCommand" />.
+    /// </summary>
+    /// <param name="command">The command carrying the primitive identifiers.</param>
+    public Trip(CreateTripCommand command)
+        : this(new OrganizationId(command.OrganizationId), new RouteId(command.RouteId), new DriverId(command.DriverId))
+    {
     }
 
     /// <summary>The unique identity of the trip.</summary>
