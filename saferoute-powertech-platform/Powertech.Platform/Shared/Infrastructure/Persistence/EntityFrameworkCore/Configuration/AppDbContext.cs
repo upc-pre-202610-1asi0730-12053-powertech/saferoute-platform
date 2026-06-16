@@ -4,6 +4,7 @@
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
+using Powertech.Platform.Trip.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
 namespace Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 
@@ -23,6 +24,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         base.OnConfiguring(builder);
     }
 
+
     /// <summary>
     ///     On creating the database model
     /// </summary>
@@ -36,14 +38,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     {
         base.OnModelCreating(builder);
 
-        // Publishing Context
-        //builder.ApplyPublishingConfiguration();
-
-        // Profiles Context
-        //builder.ApplyProfilesConfiguration();
-
-        // IAM Context
-        //builder.ApplyIamConfiguration();
+        // Per-bounded-context model configuration (declared in each context's Infrastructure layer).
+        builder.ApplyTripConfiguration();
 
         // General Naming Convention for the database objects
         builder.UseSnakeCaseNamingConvention();

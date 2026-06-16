@@ -19,4 +19,7 @@ public interface ITripCommandService
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A result wrapping the created trip.</returns>
     Task<Result<TripAggregate>> Handle(CreateTripCommand command, CancellationToken cancellationToken);
+    
+    /// <summary>Handles starting a prepared trip.</summary>
+    Task<Result<TripAggregate>> Handle(StartTripCommand command, CancellationToken cancellationToken);
 }
