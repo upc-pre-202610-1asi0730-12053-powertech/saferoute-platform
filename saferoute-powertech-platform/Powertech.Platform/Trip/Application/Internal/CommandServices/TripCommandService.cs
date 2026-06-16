@@ -66,6 +66,10 @@ public class TripCommandService(
     public Task<Result<TripAggregate>> Handle(StartTripCommand command, CancellationToken cancellationToken) =>
         MutateAsync(command.TripId, trip => trip.Start(), cancellationToken);
     
+    /// <inheritdoc />
+    public Task<Result<TripAggregate>> Handle(CompleteTripCommand command, CancellationToken cancellationToken) =>
+        MutateAsync(command.TripId, trip => trip.Complete(), cancellationToken);
+    
         /// <summary>
     ///     Shared workflow for commands that load an existing trip, mutate it through a domain
     ///     behavior and persist the change, mapping any failure to a typed result.

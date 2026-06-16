@@ -22,4 +22,7 @@ public interface ITripCommandService
     
     /// <summary>Handles starting a prepared trip.</summary>
     Task<Result<TripAggregate>> Handle(StartTripCommand command, CancellationToken cancellationToken);
+    
+    /// <summary>Handles completing an in-progress trip.</summary>
+    Task<Result<TripAggregate>> Handle(CompleteTripCommand command, CancellationToken cancellationToken);
 }
