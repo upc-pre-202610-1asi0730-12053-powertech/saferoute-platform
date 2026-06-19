@@ -1,4 +1,5 @@
-﻿using Powertech.Platform.Trip.Interfaces.Rest.Resources;
+﻿using Powertech.Platform.Trip.Domain.Model.Entities;
+using Powertech.Platform.Trip.Interfaces.Rest.Resources;
 
 namespace Powertech.Platform.Trip.Interfaces.Rest.Transform;
 using TripAggregate = Powertech.Platform.Trip.Domain.Model.Aggregates.Trip;
@@ -23,6 +24,14 @@ public static class TripResourceFromEntityAssembler
             entity.DriverId.ToString(),
             entity.State.Value,
             entity.StartTime,
-            entity.EndTime);
+            entity.EndTime,
+            entity.Attendances.Select(ToAttendanceResource).ToList());
     }
+    
+    /// <summary>Converts an <see cref="Attendance" /> entity into its resource.</summary>
+    private static AttendanceResource ToAttendanceResource(Attendance attendance) =>
+        new(attendance.Id.ToString(),
+            attendance.ChildId.ToString(),
+            attendance.BoardingState.Value,
+            attendance.BoardedAt);
 }

@@ -23,4 +23,5 @@ public record TripResource(
     string DriverId,
     string TripState,
     DateTimeOffset? StartTime,
-    DateTimeOffset? EndTime);
+    DateTimeOffset? EndTime,
+    IReadOnlyList<AttendanceResource> Attendances);

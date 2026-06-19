@@ -7,6 +7,7 @@ using Powertech.Platform.Shared.Domain.Repositories;
 using Powertech.Platform.Trip.Application.CommandServices;
 using Powertech.Platform.Trip.Domain.Model.Commands;
 using Powertech.Platform.Trip.Domain.Model;
+using Powertech.Platform.Trip.Domain.Model.ValueObjects;
 using Powertech.Platform.Trip.Domain.Repositories;
 using TripAggregate = Powertech.Platform.Trip.Domain.Model.Aggregates.Trip;
 
@@ -65,6 +66,12 @@ public class TripCommandService(
     /// <inheritdoc />
     public Task<Result<TripAggregate>> Handle(StartTripCommand command, CancellationToken cancellationToken) =>
         MutateAsync(command.TripId, trip => trip.Start(), cancellationToken);
+    
+    /// <inheritdoc />
+    public Task<Result<TripAggregate>> Handle(SetBoardingStatusCommand command, CancellationToken cancellationToken) =>
+        MutateAsync(command.TripId,
+            trip => trip.SetBoardingStatus(new ChildId(command.ChildId), new BoardingState(command.BoardingState)),
+            cancellationToken);
     
     /// <inheritdoc />
     public Task<Result<TripAggregate>> Handle(CompleteTripCommand command, CancellationToken cancellationToken) =>

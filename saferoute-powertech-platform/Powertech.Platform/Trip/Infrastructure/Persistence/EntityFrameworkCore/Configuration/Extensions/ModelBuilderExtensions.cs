@@ -56,6 +56,27 @@ public static class ModelBuilderExtensions
 
             trip.Property(t => t.StartTime);
             trip.Property(t => t.EndTime);
+            
+            // Owned collection: boarding attendances.
+            trip.OwnsMany(t => t.Attendances, attendance =>
+            {
+                attendance.WithOwner().HasForeignKey("TripId");
+
+                attendance.Property(a => a.Id)
+                    .HasConversion(id => id.Identifier, value => new AttendanceId(value))
+                    .ValueGeneratedNever();
+                attendance.HasKey(a => a.Id);
+
+                attendance.Property(a => a.ChildId)
+                    .HasConversion(id => id.Identifier, value => new ChildId(value))
+                    .IsRequired();
+
+                attendance.Property(a => a.BoardingState)
+                    .HasConversion(state => state.Value, value => new BoardingState(value))
+                    .IsRequired();
+
+                attendance.Property(a => a.BoardedAt);
+            });
         });
     }
 }

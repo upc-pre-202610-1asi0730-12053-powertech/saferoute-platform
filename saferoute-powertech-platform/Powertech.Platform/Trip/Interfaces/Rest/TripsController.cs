@@ -78,6 +78,22 @@ public class TripsController(
             found => Ok(TripResourceFromEntityAssembler.ToResourceFromEntity(found)));
     }
     
+    /// <summary>Records a child's boarding status during a trip.</summary>
+    [HttpPost("{tripId:guid}/boarding")]
+    [SwaggerOperation("Record Boarding", "Records a child's boarding status during a trip.",
+        OperationId = "RecordBoarding")]
+    [SwaggerResponse(200, "The boarding status was recorded.", typeof(TripResource))]
+    [SwaggerResponse(404, "The trip was not found.")]
+    [SwaggerResponse(409, "The trip is not in progress.")]
+    public async Task<IActionResult> RecordBoarding(Guid tripId, SetBoardingStatusResource resource,
+        CancellationToken cancellationToken)
+    {
+        var command = SetBoardingStatusCommandFromResourceAssembler.ToCommandFromResource(tripId, resource);
+        var result = await tripCommandService.Handle(command, cancellationToken);
+        return TripActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
+            trip => Ok(TripResourceFromEntityAssembler.ToResourceFromEntity(trip)));
+    }
+    
     /// <summary>Completes an in-progress trip.</summary>
     [HttpPost("{tripId:guid}/complete")]
     [SwaggerOperation("Complete Trip", "Completes an in-progress trip.", OperationId = "CompleteTrip")]

@@ -1,5 +1,6 @@
 ﻿using Powertech.Platform.Shared.Domain.Model.ValueObjects;
 using Powertech.Platform.Trip.Domain.Model.Commands;
+using Powertech.Platform.Trip.Domain.Model.Entities;
 using Powertech.Platform.Trip.Domain.Model.ValueObjects;
 
 namespace Powertech.Platform.Trip.Domain.Model.Aggregates;
@@ -22,7 +23,7 @@ namespace Powertech.Platform.Trip.Domain.Model.Aggregates;
 /// </remarks>
 public class Trip
 {
-
+    private readonly List<Attendance> _attendances = [];
     /// <summary>Parameterless constructor required by EF Core materialization.</summary>
     protected Trip()
     {
@@ -77,6 +78,13 @@ public class Trip
 
     /// <summary>The moment the trip completed; <c>null</c> until completion.</summary>
     public DateTimeOffset? EndTime { get; private set; }
+    
+    /// <summary>
+    ///     The boarding attendance records collected during the trip. Exposed as a read-only view;
+    ///     mutation happens only through <see cref="SetBoardingStatus" />. The backing field is the
+    ///     navigation EF Core maps as an owned collection.
+    /// </summary>
+    public IReadOnlyCollection<Attendance> Attendances => _attendances;
 
     /// <summary>
     ///     Starts the trip, transitioning it to <c>IN_PROGRESS</c>.
@@ -103,7 +111,22 @@ public class Trip
         State = new TripState(TripState.Completed);
         EndTime = DateTimeOffset.UtcNow;
     }
+    
+    public void SetBoardingStatus(ChildId childId, BoardingState state)
+    {
+        if (!State.IsInProgress())
+            throw new InvalidOperationException("Boarding can only be recorded while the trip is in progress.");
 
+        var existing = _attendances.FirstOrDefault(a => a.ChildId == childId);
+        if (existing is not null)
+            existing.UpdateBoardingState(state);
+        else
+            _attendances.Add(new Attendance(childId, state));
+    }
+
+    /// <summary>Returns the boarding attendance summary for the trip.</summary>
+    public IReadOnlyCollection<Attendance> GetAttendanceSummary() => Attendances;
+    
     /// <summary>Returns <c>true</c> when the trip is currently in progress.</summary>
     public bool IsInProgress() => State.IsInProgress();
 }
