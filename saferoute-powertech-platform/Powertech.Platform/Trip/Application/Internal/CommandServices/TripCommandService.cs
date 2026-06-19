@@ -74,6 +74,12 @@ public class TripCommandService(
             cancellationToken);
     
     /// <inheritdoc />
+    public Task<Result<TripAggregate>> Handle(ReportIncidentCommand command, CancellationToken cancellationToken) =>
+        MutateAsync(command.TripId,
+            trip => trip.ReportIncident(new IncidentDescription(command.Description)),
+            cancellationToken);
+    
+    /// <inheritdoc />
     public Task<Result<TripAggregate>> Handle(CompleteTripCommand command, CancellationToken cancellationToken) =>
         MutateAsync(command.TripId, trip => trip.Complete(), cancellationToken);
     

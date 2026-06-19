@@ -8,8 +8,11 @@ using Powertech.Platform.Shared.Infrastructure.Interfaces.AspNetCore.Configurati
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Powertech.Platform.Shared.Infrastructure.Pipeline.Middleware.Extensions;
+using Powertech.Platform.Shared.Interfaces.Rest.ProblemDetails;
 using Powertech.Platform.Trip.Application.CommandServices;
 using Powertech.Platform.Trip.Application.Internal;
+using Powertech.Platform.Trip.Application.Internal.QueryServices;
+using Powertech.Platform.Trip.Application.QueryServices;
 using Powertech.Platform.Trip.Domain.Repositories;
 using Powertech.Platform.Trip.Infrastructure.Repositories;
 
@@ -59,6 +62,8 @@ builder.Services.AddLocalization(options => options.ResourcesPath = "Resources")
 builder.Services.AddSingleton<IStringLocalizer<ErrorMessages>, StringLocalizer<ErrorMessages>>();
 builder.Services.AddSingleton<IStringLocalizer<CommonMessages>, StringLocalizer<CommonMessages>>();
 
+builder.Services.AddSingleton<ProblemDetailsFactory>();
+
 // ---------------------------------------------------------------------------
 // Swagger / OpenAPI
 // ---------------------------------------------------------------------------
@@ -91,6 +96,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Trip bounded context
 builder.Services.AddScoped<ITripRepository, TripRepository>();
 builder.Services.AddScoped<ITripCommandService, TripCommandService>();
+builder.Services.AddScoped<ITripQueryService, TripQueryService>();
 
 var app = builder.Build();
 

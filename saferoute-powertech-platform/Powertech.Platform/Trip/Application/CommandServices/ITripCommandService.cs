@@ -26,6 +26,9 @@ public interface ITripCommandService
     /// <summary>Handles recording a child's boarding status during a trip.</summary>
     Task<Result<TripAggregate>> Handle(SetBoardingStatusCommand command, CancellationToken cancellationToken);
     
+    /// <summary>Handles reporting an incident during a trip.</summary>
+    Task<Result<TripAggregate>> Handle(ReportIncidentCommand command, CancellationToken cancellationToken);
+    
     /// <summary>Handles completing an in-progress trip.</summary>
     Task<Result<TripAggregate>> Handle(CompleteTripCommand command, CancellationToken cancellationToken);
 }

@@ -24,6 +24,7 @@ namespace Powertech.Platform.Trip.Domain.Model.Aggregates;
 public class Trip
 {
     private readonly List<Attendance> _attendances = [];
+    private readonly List<Incident> _incidents = [];
     /// <summary>Parameterless constructor required by EF Core materialization.</summary>
     protected Trip()
     {
@@ -85,6 +86,12 @@ public class Trip
     ///     navigation EF Core maps as an owned collection.
     /// </summary>
     public IReadOnlyCollection<Attendance> Attendances => _attendances;
+    
+    /// <summary>
+    ///     The incidents reported during the trip. Exposed as a read-only view; mutation happens
+    ///     only through <see cref="ReportIncident" />.
+    /// </summary>
+    public IReadOnlyCollection<Incident> Incidents => _incidents;
 
     /// <summary>
     ///     Starts the trip, transitioning it to <c>IN_PROGRESS</c>.
@@ -123,9 +130,25 @@ public class Trip
         else
             _attendances.Add(new Attendance(childId, state));
     }
+    
+    /// <summary>
+    ///     Reports an incident during the trip.
+    /// </summary>
+    /// <param name="description">The validated incident description.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the trip is not in progress.</exception>
+    public void ReportIncident(IncidentDescription description)
+    {
+        if (!State.IsInProgress())
+            throw new InvalidOperationException("Incidents can only be reported while the trip is in progress.");
+
+        _incidents.Add(new Incident(description));
+    }
 
     /// <summary>Returns the boarding attendance summary for the trip.</summary>
     public IReadOnlyCollection<Attendance> GetAttendanceSummary() => Attendances;
+    
+    /// <summary>Returns the incident log for the trip.</summary>
+    public IReadOnlyCollection<Incident> GetIncidentLog() => Incidents;
     
     /// <summary>Returns <c>true</c> when the trip is currently in progress.</summary>
     public bool IsInProgress() => State.IsInProgress();

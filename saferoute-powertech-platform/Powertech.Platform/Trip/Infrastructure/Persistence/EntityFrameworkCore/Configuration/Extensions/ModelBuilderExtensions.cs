@@ -77,6 +77,24 @@ public static class ModelBuilderExtensions
 
                 attendance.Property(a => a.BoardedAt);
             });
+            
+            // Owned collection: reported incidents.
+            trip.OwnsMany(t => t.Incidents, incident =>
+            {
+                incident.WithOwner().HasForeignKey("TripId");
+
+                incident.Property(i => i.Id)
+                    .HasConversion(id => id.Identifier, value => new IncidentId(value))
+                    .ValueGeneratedNever();
+                incident.HasKey(i => i.Id);
+
+                incident.Property(i => i.Description)
+                    .HasConversion(description => description.Value, value => new IncidentDescription(value))
+                    .HasMaxLength(IncidentDescription.MaxLength)
+                    .IsRequired();
+
+                incident.Property(i => i.ReportedAt).IsRequired();
+            });
         });
     }
 }
