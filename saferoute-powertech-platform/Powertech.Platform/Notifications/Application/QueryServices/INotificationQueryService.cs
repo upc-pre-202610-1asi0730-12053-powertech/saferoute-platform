@@ -7,4 +7,5 @@ public interface INotificationQueryService
 {
     Task<Notification?> Handle(GetNotificationByIdQuery query, CancellationToken cancellationToken = default);
     Task<IEnumerable<Notification>> Handle(GetAllNotificationsQuery query, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Notification>> Handle(GetNotificationsByParentIdQuery query, CancellationToken cancellationToken = default);
 }
