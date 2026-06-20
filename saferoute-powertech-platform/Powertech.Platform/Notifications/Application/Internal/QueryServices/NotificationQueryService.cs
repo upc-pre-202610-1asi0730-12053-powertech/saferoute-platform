@@ -19,6 +19,6 @@ public class NotificationQueryService(INotificationRepository notificationReposi
 
     public async Task<IEnumerable<Notification>> Handle(GetNotificationsByParentIdQuery query, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await notificationRepository.FindByParentIdAsync(query.ParentId);
     }
 }
