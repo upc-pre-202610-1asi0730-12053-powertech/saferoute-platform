@@ -1,0 +1,26 @@
+using Microsoft.AspNetCore.Mvc;
+using Powertech.Platform.Notifications.Application.CommandServices;
+using Powertech.Platform.Notifications.Domain.Model.Commands;
+using Powertech.Platform.Notifications.Interfaces.Rest.Resources;
+using Powertech.Platform.Notifications.Interfaces.Rest.Transform;
+using Powertech.Platform.Shared.Interfaces.Rest.ProblemDetails;
+
+namespace Powertech.Platform.Notifications.Interfaces.Rest;
+
+[ApiController]
+[Route("api/v1/[controller]")]
+public class NotificationsController(
+    INotificationCommandService commandService,
+    ProblemDetailsFactory problemDetailsFactory) : ControllerBase
+{
+    [HttpPost]
+    public async Task<IActionResult> CreateNotification([FromBody] CreateNotificationResource resource, CancellationToken cancellationToken)
+    {
+        var command = new CreateNotificationCommand(resource.OrganizationId, resource.ParentId, resource.TripId, resource.Category, resource.Message);
+        var result = await commandService.Handle(command, cancellationToken);
+        
+        return NotificationActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
+            notification => CreatedAtAction(nameof(CreateNotification), new { notificationId = notification.Id.Identifier }, 
+                NotificationResourceFromEntityAssembler.ToResourceFromEntity(notification)));
+    }
+}
