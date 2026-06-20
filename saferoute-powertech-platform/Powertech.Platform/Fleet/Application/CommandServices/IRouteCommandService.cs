@@ -13,6 +13,8 @@ namespace Powertech.Platform.Fleet.Application.CommandServices;
 /// </remarks>
 public interface IRouteCommandService
 {
+    /// <summary>Handles defining (creating) a new route.</summary>
+    Task<Result<Route>> Handle(CreateRouteCommand command, CancellationToken cancellationToken);
     /// <summary>Handles assigning a child to a route.</summary>
     Task<Result<Route>> Handle(AssignStudentsToRouteCommand command, CancellationToken cancellationToken);
     

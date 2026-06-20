@@ -29,6 +29,36 @@ public class RouteCommandService(
     IStringLocalizer<ErrorMessages> localizer)
     : IRouteCommandService
 {
+    
+    /// <inheritdoc />
+    public async Task<Result<Route>> Handle(CreateRouteCommand command, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var route = new Route(command);
+            await routeRepository.AddAsync(route, cancellationToken);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return Result<Route>.Success(route);
+        }
+        catch (ArgumentException ex)
+        {
+            return Result<Route>.Failure(FleetError.InvalidRouteData, ex.Message);
+        }
+        catch (OperationCanceledException)
+        {
+            return Result<Route>.Failure(FleetError.OperationCancelled,
+                localizer[nameof(FleetError.OperationCancelled)]);
+        }
+        catch (DbUpdateException)
+        {
+            return Result<Route>.Failure(FleetError.DatabaseError, localizer[nameof(FleetError.DatabaseError)]);
+        }
+        catch (Exception)
+        {
+            return Result<Route>.Failure(FleetError.InternalServerError,
+                localizer[nameof(FleetError.InternalServerError)]);
+        }
+    }
     /// <inheritdoc />
     public Task<Result<Route>> Handle(AssignStudentsToRouteCommand command, CancellationToken cancellationToken) =>
         MutateAsync(command.RouteId, route => route.AssignStudent(new ChildId(command.ChildId)), cancellationToken);

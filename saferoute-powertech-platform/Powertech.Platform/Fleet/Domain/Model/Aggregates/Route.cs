@@ -40,7 +40,15 @@ public class Route
         Name = name;
         State = RouteState.CreateDraft();
     }
-
+    
+    
+    /// <summary>Creates a new route from a <see cref="CreateRouteCommand" />.</summary>
+    /// <param name="command">The command carrying the route data.</param>
+    public Route(CreateRouteCommand command)
+        : this(new OrganizationId(command.OrganizationId), command.Name)
+    {
+    }
+    
     /// <summary>The unique identity of the route.</summary>
     public RouteId Id { get; private set; }
 
