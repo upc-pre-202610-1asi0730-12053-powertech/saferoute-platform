@@ -67,4 +67,12 @@ public class NotificationsController(
         return NotificationActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
             notification => Ok(NotificationResourceFromEntityAssembler.ToResourceFromEntity(notification)));
     }
+
+    [HttpPost("{notificationId:guid}/alerts")]
+    public async Task<IActionResult> TriggerAlert(Guid notificationId, TriggerAlertResource resource, CancellationToken cancellationToken)
+    {
+        var result = await commandService.Handle(new TriggerAlertCommand(notificationId, resource.Panic), cancellationToken);
+        return NotificationActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
+            notification => Ok(NotificationResourceFromEntityAssembler.ToResourceFromEntity(notification)));
+    }
 }
