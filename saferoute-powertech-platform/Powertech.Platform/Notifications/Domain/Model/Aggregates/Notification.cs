@@ -54,4 +54,9 @@ public partial class Notification
     {
         Alerts.Add(new Alert(Id, panic));
     }
+
+    public void AddAnnouncement(Guid routeId, string message)
+    {
+        Announcements.Add(new Announcement(Id, routeId, message));
+    }
 }
