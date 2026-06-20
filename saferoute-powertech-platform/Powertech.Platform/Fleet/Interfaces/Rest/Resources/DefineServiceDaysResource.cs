@@ -1,4 +1,4 @@
-﻿namespace Powertech.Platform.Fleet.Interfaces.Rest.Resources
+﻿namespace Powertech.Platform.Fleet.Interfaces.Rest.Resources;
     
     
 /// <summary>Input resource to define the service days of a route.</summary>
