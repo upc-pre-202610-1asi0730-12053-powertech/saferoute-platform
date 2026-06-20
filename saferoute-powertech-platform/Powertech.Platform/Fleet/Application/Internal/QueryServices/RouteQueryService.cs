@@ -12,7 +12,10 @@ namespace Safer_Route_Platform.Fleet.Application.Internal.QueryServices;
 /// <param name="routeRepository">The route repository abstraction.</param>
 
 
-public class RouteQueryService
+public class RouteQueryService(IRouteRepository routeRepository) : IRouteQueryService
 {
-    
-}
+    /// <inheritdoc />
+    public async Task<Route?> Handle(GetRouteByIdQuery query, CancellationToken cancellationToken)
+    {
+        return await routeRepository.FindByRouteIdAsync(new RouteId(query.RouteId), cancellationToken);
+    }
