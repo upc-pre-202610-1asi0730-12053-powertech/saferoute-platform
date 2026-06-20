@@ -25,3 +25,11 @@ public class RouteQueryService(IRouteRepository routeRepository) : IRouteQuerySe
     {
         return await routeRepository.ListAsync(cancellationToken);
     }
+    /// <inheritdoc />
+    public async Task<IEnumerable<Route>> Handle(GetRoutesByOrganizationIdQuery query,
+        CancellationToken cancellationToken)
+    {
+        return await routeRepository.FindByOrganizationIdAsync(new OrganizationId(query.OrganizationId),
+            cancellationToken);
+    }
+}
