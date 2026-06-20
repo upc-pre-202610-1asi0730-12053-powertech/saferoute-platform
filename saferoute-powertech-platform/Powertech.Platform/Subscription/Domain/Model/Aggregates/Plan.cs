@@ -1,8 +1,10 @@
-using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
-using Safer_Route_Platform.Subscription.Domain.Model.Commands;
-using Safer_Route_Platform.Subscription.Domain.Model.ValueObjects;
 
-namespace Safer_Route_Platform.Subscription.Domain.Model.Aggregates;
+
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
+using Powertech.Platform.Subscription.Domain.Model.Commands;
+using Powertech.Platform.Subscription.Domain.Model.ValueObjects;
+
+namespace Powertech.Platform.Subscription.Domain.Model.Aggregates;
 
 public class Plan
 {

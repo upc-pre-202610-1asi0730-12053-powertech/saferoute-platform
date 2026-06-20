@@ -1,8 +1,9 @@
-using Safer_Route_Platform.Subscription.Domain.Model.Aggregates;
-using Safer_Route_Platform.Subscription.Domain.Model.Queries;
-using SubscriptionAggregate = Safer_Route_Platform.Subscription.Domain.Model.Aggregates.Subscription;
 
-namespace Safer_Route_Platform.Subscription.Application.QueryServices;
+using Powertech.Platform.Subscription.Domain.Model.Aggregates;
+using Powertech.Platform.Subscription.Domain.Model.Queries;
+using SubscriptionAggregate = Powertech.Platform.Subscription.Domain.Model.Aggregates.Subscription;
+
+namespace Powertech.Platform.Subscription.Application.QueryServices;
 
 public interface ISubscriptionQueryService
 {

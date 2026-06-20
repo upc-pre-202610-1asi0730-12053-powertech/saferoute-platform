@@ -14,6 +14,12 @@ using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.C
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Powertech.Platform.Shared.Infrastructure.Pipeline.Middleware.Extensions;
 using Powertech.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Powertech.Platform.Subscription.Application.CommandServices;
+using Powertech.Platform.Subscription.Application.Internal.CommandServices;
+using Powertech.Platform.Subscription.Application.Internal.QueryServices;
+using Powertech.Platform.Subscription.Application.QueryServices;
+using Powertech.Platform.Subscription.Domain.Repositories;
+using Powertech.Platform.Subscription.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Powertech.Platform.Trip.Application.CommandServices;
 using Powertech.Platform.Trip.Application.Internal;
 using Powertech.Platform.Trip.Application.Internal.QueryServices;
@@ -106,6 +112,12 @@ builder.Services.AddScoped<ITripQueryService, TripQueryService>();
 builder.Services.AddScoped<IRouteRepository, RouteRepository>();
 builder.Services.AddScoped<IRouteCommandService, RouteCommandService>();
 builder.Services.AddScoped<IRouteQueryService, RouteQueryService>();
+
+// Subscription bounded context
+builder.Services.AddScoped<IPlanRepository, PlanRepository>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
+builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
 
 var app = builder.Build();
 

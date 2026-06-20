@@ -1,4 +1,4 @@
-namespace Safer_Route_Platform.Subscription.Domain.Model.ValueObjects;
+namespace Powertech.Platform.Subscription.Domain.Model.ValueObjects;
 
 public record PlanTier
 {

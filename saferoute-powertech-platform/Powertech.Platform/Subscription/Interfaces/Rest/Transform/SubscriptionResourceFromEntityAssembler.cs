@@ -1,8 +1,8 @@
-using Safer_Route_Platform.Subscription.Domain.Model.Aggregates;
-using Safer_Route_Platform.Subscription.Interfaces.Rest.Resources;
-using SubscriptionAggregate = Safer_Route_Platform.Subscription.Domain.Model.Aggregates.Subscription;
+using Powertech.Platform.Subscription.Domain.Model.Aggregates;
+using Powertech.Platform.Subscription.Interfaces.Rest.Resources;
+using SubscriptionAggregate = Powertech.Platform.Subscription.Domain.Model.Aggregates.Subscription;
 
-namespace Safer_Route_Platform.Subscription.Interfaces.Rest.Transform;
+namespace Powertech.Platform.Subscription.Interfaces.Rest.Transform;
 
 public static class SubscriptionResourceFromEntityAssembler
 {

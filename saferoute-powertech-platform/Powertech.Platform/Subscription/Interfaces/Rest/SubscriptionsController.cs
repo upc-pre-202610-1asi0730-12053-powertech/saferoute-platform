@@ -1,16 +1,16 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
-using Safer_Route_Platform.Shared.Interfaces.Rest.ProblemDetails;
-using Safer_Route_Platform.Subscription.Application.CommandServices;
-using Safer_Route_Platform.Subscription.Application.QueryServices;
-using Safer_Route_Platform.Subscription.Domain.Model;
-using Safer_Route_Platform.Subscription.Domain.Model.Commands;
-using Safer_Route_Platform.Subscription.Domain.Model.Queries;
-using Safer_Route_Platform.Subscription.Interfaces.Rest.Resources;
-using Safer_Route_Platform.Subscription.Interfaces.Rest.Transform;
+using Powertech.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Powertech.Platform.Subscription.Application.CommandServices;
+using Powertech.Platform.Subscription.Application.QueryServices;
+using Powertech.Platform.Subscription.Domain.Model;
+using Powertech.Platform.Subscription.Domain.Model.Commands;
+using Powertech.Platform.Subscription.Domain.Model.Queries;
+using Powertech.Platform.Subscription.Interfaces.Rest.Resources;
+using Powertech.Platform.Subscription.Interfaces.Rest.Transform;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Safer_Route_Platform.Subscription.Interfaces.Rest;
+namespace Powertech.Platform.Subscription.Interfaces.Rest;
 
 [ApiController]
 [Route("api/v1/[controller]")]

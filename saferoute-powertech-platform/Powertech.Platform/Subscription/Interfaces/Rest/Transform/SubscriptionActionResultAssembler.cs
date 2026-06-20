@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Safer_Route_Platform.Shared.Application.Model;
-using Safer_Route_Platform.Shared.Interfaces.Rest.ProblemDetails;
-using Safer_Route_Platform.Subscription.Domain.Model;
+using Powertech.Platform.Shared.Application.Model;
+using Powertech.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Powertech.Platform.Subscription.Domain.Model;
 
-namespace Safer_Route_Platform.Subscription.Interfaces.Rest.Transform;
+namespace Powertech.Platform.Subscription.Interfaces.Rest.Transform;
 
 public static class SubscriptionActionResultAssembler
 {

@@ -1,8 +1,8 @@
-using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
-using Safer_Route_Platform.Shared.Domain.Repositories;
-using SubscriptionAggregate = Safer_Route_Platform.Subscription.Domain.Model.Aggregates.Subscription;
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
+using Powertech.Platform.Shared.Domain.Repositories;
+using SubscriptionAggregate = Powertech.Platform.Subscription.Domain.Model.Aggregates.Subscription;
 
-namespace Safer_Route_Platform.Subscription.Domain.Repositories;
+namespace Powertech.Platform.Subscription.Domain.Repositories;
 
 public interface ISubscriptionRepository : IBaseRepository<SubscriptionAggregate>
 {

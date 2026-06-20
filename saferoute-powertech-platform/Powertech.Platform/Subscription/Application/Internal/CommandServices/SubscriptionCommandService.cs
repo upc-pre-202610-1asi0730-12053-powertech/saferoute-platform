@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore;
-using Safer_Route_Platform.Shared.Application.Model;
-using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
-using Safer_Route_Platform.Shared.Domain.Repositories;
-using Safer_Route_Platform.Subscription.Application.CommandServices;
-using Safer_Route_Platform.Subscription.Domain.Model;
-using Safer_Route_Platform.Subscription.Domain.Model.Aggregates;
-using Safer_Route_Platform.Subscription.Domain.Model.Commands;
-using Safer_Route_Platform.Subscription.Domain.Repositories;
-using SubscriptionAggregate = Safer_Route_Platform.Subscription.Domain.Model.Aggregates.Subscription;
+using Powertech.Platform.Shared.Application.Model;
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
+using Powertech.Platform.Shared.Domain.Repositories;
+using Powertech.Platform.Subscription.Application.CommandServices;
+using Powertech.Platform.Subscription.Domain.Model;
+using Powertech.Platform.Subscription.Domain.Model.Aggregates;
+using Powertech.Platform.Subscription.Domain.Model.Commands;
+using Powertech.Platform.Subscription.Domain.Repositories;
+using SubscriptionAggregate = Powertech.Platform.Subscription.Domain.Model.Aggregates.Subscription;
 
-namespace Safer_Route_Platform.Subscription.Application.Internal.CommandServices;
+namespace Powertech.Platform.Subscription.Application.Internal.CommandServices;
 
 public class SubscriptionCommandService(
     IPlanRepository planRepository,

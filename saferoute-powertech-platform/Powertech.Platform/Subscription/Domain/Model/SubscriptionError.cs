@@ -1,4 +1,4 @@
-namespace Safer_Route_Platform.Subscription.Domain.Model;
+namespace Powertech.Platform.Subscription.Domain.Model;
 
 public enum SubscriptionError
 {

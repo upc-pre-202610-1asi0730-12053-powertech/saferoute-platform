@@ -1,11 +1,11 @@
-using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
-using Safer_Route_Platform.Subscription.Application.QueryServices;
-using Safer_Route_Platform.Subscription.Domain.Model.Aggregates;
-using Safer_Route_Platform.Subscription.Domain.Model.Queries;
-using Safer_Route_Platform.Subscription.Domain.Repositories;
-using SubscriptionAggregate = Safer_Route_Platform.Subscription.Domain.Model.Aggregates.Subscription;
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
+using Powertech.Platform.Subscription.Application.QueryServices;
+using Powertech.Platform.Subscription.Domain.Model.Aggregates;
+using Powertech.Platform.Subscription.Domain.Model.Queries;
+using Powertech.Platform.Subscription.Domain.Repositories;
+using SubscriptionAggregate = Powertech.Platform.Subscription.Domain.Model.Aggregates.Subscription;
 
-namespace Safer_Route_Platform.Subscription.Application.Internal.QueryServices;
+namespace Powertech.Platform.Subscription.Application.Internal.QueryServices;
 
 public class SubscriptionQueryService(IPlanRepository planRepository, ISubscriptionRepository subscriptionRepository)
     : ISubscriptionQueryService

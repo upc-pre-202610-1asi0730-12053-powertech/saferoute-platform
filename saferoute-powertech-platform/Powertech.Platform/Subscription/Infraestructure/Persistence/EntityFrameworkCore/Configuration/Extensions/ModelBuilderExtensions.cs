@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
-using Safer_Route_Platform.Subscription.Domain.Model.Aggregates;
-using Safer_Route_Platform.Subscription.Domain.Model.ValueObjects;
-using SubscriptionAggregate = Safer_Route_Platform.Subscription.Domain.Model.Aggregates.Subscription;
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
+using Powertech.Platform.Subscription.Domain.Model.Aggregates;
+using Powertech.Platform.Subscription.Domain.Model.ValueObjects;
+using SubscriptionAggregate = Powertech.Platform.Subscription.Domain.Model.Aggregates.Subscription;
 
-namespace Safer_Route_Platform.Subscription.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+namespace Powertech.Platform.Subscription.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
 public static class ModelBuilderExtensions
 {

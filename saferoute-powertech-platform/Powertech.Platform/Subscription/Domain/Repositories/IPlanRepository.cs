@@ -1,8 +1,10 @@
-using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
-using Safer_Route_Platform.Shared.Domain.Repositories;
-using Safer_Route_Platform.Subscription.Domain.Model.Aggregates;
 
-namespace Safer_Route_Platform.Subscription.Domain.Repositories;
+
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
+using Powertech.Platform.Shared.Domain.Repositories;
+using Powertech.Platform.Subscription.Domain.Model.Aggregates;
+
+namespace Powertech.Platform.Subscription.Domain.Repositories;
 
 public interface IPlanRepository : IBaseRepository<Plan>
 {
