@@ -166,3 +166,8 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
+// (Fragmento a agregar en la sección de inyección de dependencias)
+
+// Notification Bounded Context
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationCommandService, NotificationCommandService>();
