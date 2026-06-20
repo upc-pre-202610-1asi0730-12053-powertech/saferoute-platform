@@ -36,9 +36,18 @@ public class NotificationsController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllNotifications(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetNotifications([FromQuery] Guid? parentId, CancellationToken cancellationToken)
     {
-        var notifications = await queryService.Handle(new GetAllNotificationsQuery(), cancellationToken);
+        IEnumerable<Powertech.Platform.Notifications.Domain.Model.Aggregates.Notification> notifications;
+        if (parentId.HasValue)
+        {
+            notifications = await queryService.Handle(new GetNotificationsByParentIdQuery(parentId.Value), cancellationToken);
+        }
+        else
+        {
+            notifications = await queryService.Handle(new GetAllNotificationsQuery(), cancellationToken);
+        }
+        
         var resources = notifications.Select(NotificationResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(resources);
     }
