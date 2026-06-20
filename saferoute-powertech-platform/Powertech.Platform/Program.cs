@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.OpenApi;
+using Powertech.Platform.Fleet.Application.CommandServices;
+using Powertech.Platform.Fleet.Application.Internal.CommandServices;
+using Powertech.Platform.Fleet.Domain.Repositories;
+using Powertech.Platform.Fleet.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Powertech.Platform.Resources.Errors;
 using Powertech.Platform.Resources.Shared;
 using Powertech.Platform.Shared.Domain.Repositories;
@@ -73,10 +77,9 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1",
         new OpenApiInfo
         {
-            Title = "Safer-Route-Platform",
+            Title = "Powertech-Platform",
             Version = "v1",
-            Description = "SafeRoute Platform API — Trip Execution & Monitoring and Fleet & Route Planning contexts.",
-            Contact = new OpenApiContact { Name = "SafeRoute", Email = "contact@saferoute.com" },
+            Description = "Powertech Platform API",
             License = new OpenApiLicense
             {
                 Name = "Apache 2.0",
@@ -97,6 +100,10 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITripRepository, TripRepository>();
 builder.Services.AddScoped<ITripCommandService, TripCommandService>();
 builder.Services.AddScoped<ITripQueryService, TripQueryService>();
+
+// Fleet bounded context
+builder.Services.AddScoped<IRouteRepository, RouteRepository>();
+builder.Services.AddScoped<IRouteCommandService, RouteCommandService>();
 
 var app = builder.Build();
 
