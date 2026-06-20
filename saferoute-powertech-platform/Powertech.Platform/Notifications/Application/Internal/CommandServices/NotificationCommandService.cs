@@ -1,14 +1,23 @@
 using Powertech.Platform.Notifications.Application.CommandServices;
 using Powertech.Platform.Notifications.Domain.Model.Aggregates;
 using Powertech.Platform.Notifications.Domain.Model.Commands;
+using Powertech.Platform.Notifications.Domain.Repositories;
 using Powertech.Platform.Shared.Application.Model;
+using Powertech.Platform.Shared.Domain.Repositories;
 
 namespace Powertech.Platform.Notifications.Application.Internal.CommandServices;
 
-public class NotificationCommandService : INotificationCommandService
+public class NotificationCommandService(
+    INotificationRepository notificationRepository,
+    IUnitOfWork unitOfWork) : INotificationCommandService
 {
     public async Task<Result<Notification>> Handle(CreateNotificationCommand command, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var notification = new Notification(command);
+        
+        await notificationRepository.AddAsync(notification);
+        await unitOfWork.CompleteAsync(cancellationToken);
+        
+        return Result<Notification>.Success(notification);
     }
 }
