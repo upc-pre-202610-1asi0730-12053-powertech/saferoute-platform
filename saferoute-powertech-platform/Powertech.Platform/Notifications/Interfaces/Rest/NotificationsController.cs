@@ -34,4 +34,12 @@ public class NotificationsController(
         if (notification is null) return NotFound();
         return Ok(NotificationResourceFromEntityAssembler.ToResourceFromEntity(notification));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllNotifications(CancellationToken cancellationToken)
+    {
+        var notifications = await queryService.Handle(new GetAllNotificationsQuery(), cancellationToken);
+        var resources = notifications.Select(NotificationResourceFromEntityAssembler.ToResourceFromEntity);
+        return Ok(resources);
+    }
 }
