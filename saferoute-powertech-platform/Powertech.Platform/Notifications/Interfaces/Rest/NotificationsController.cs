@@ -51,4 +51,12 @@ public class NotificationsController(
         var resources = notifications.Select(NotificationResourceFromEntityAssembler.ToResourceFromEntity);
         return Ok(resources);
     }
+
+    [HttpPost("{notificationId:guid}/dispatch")]
+    public async Task<IActionResult> Dispatch(Guid notificationId, CancellationToken cancellationToken)
+    {
+        var result = await commandService.Handle(new DispatchNotificationCommand(notificationId), cancellationToken);
+        return NotificationActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
+            notification => Ok(NotificationResourceFromEntityAssembler.ToResourceFromEntity(notification)));
+    }
 }
