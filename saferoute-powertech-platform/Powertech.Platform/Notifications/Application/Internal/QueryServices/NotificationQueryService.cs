@@ -11,4 +11,9 @@ public class NotificationQueryService(INotificationRepository notificationReposi
     {
         return await notificationRepository.FindByIdAsync(query.NotificationId);
     }
+
+    public async Task<IEnumerable<Notification>> Handle(GetAllNotificationsQuery query, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }

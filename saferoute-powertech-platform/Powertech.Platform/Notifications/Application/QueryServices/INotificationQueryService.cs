@@ -6,4 +6,5 @@ namespace Powertech.Platform.Notifications.Application.QueryServices;
 public interface INotificationQueryService
 {
     Task<Notification?> Handle(GetNotificationByIdQuery query, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Notification>> Handle(GetAllNotificationsQuery query, CancellationToken cancellationToken = default);
 }
