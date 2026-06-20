@@ -49,4 +49,9 @@ public partial class Notification
     {
         DeliveryState = new NotificationDeliveryState("Delivered");
     }
+
+    public void AddAlert(bool panic)
+    {
+        Alerts.Add(new Alert(Id, panic));
+    }
 }
