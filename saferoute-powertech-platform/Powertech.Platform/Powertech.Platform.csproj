@@ -28,7 +28,6 @@
     <ItemGroup>
       <Folder Include="Migrations\" />
       <Folder Include="Stakeholder\Domain\Model\Aggregates\" />
-      <Folder Include="Stakeholder\Domain\Model\Entities\" />
       <Folder Include="Stakeholder\Domain\Repositories\" />
     </ItemGroup>
 
