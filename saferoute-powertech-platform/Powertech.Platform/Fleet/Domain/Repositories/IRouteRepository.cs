@@ -1,8 +1,8 @@
-﻿using Powertech.Platform.Shared.Domain.Model.ValueObjects;
-using Powertech.Platform.Shared.Domain.Repositories;
-using Route = Powertech.Platform.Fleet.Domain.Model.Aggregates.Route;
+﻿using Route = Safer_Route_Platform.Fleet.Domain.Model.Aggregates.Route;
+using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
+using Safer_Route_Platform.Shared.Domain.Repositories;
 
-namespace Powertech.Platform.Fleet.Domain.Repositories;
+namespace Safer_Route_Platform.Fleet.Domain.Repositories;
 
 /// <summary>
 ///     Repository contract for the <see cref="Route" /> aggregate.
