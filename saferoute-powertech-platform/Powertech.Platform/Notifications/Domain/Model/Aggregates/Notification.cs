@@ -39,4 +39,9 @@ public partial class Notification
         Message = new NotificationMessage(command.Message);
         DeliveryState = new NotificationDeliveryState("Pending");
     }
+
+    public void Dispatch()
+    {
+        DeliveryState = new NotificationDeliveryState("Dispatched");
+    }
 }
