@@ -31,5 +31,28 @@ public static class ModelBuilderExtensions
             ni => { ni.Property(n => n.Content).HasColumnName("Message").HasMaxLength(1000).IsRequired(); });
             
         builder.Entity<Notification>().Property(n => n.SentAt).IsRequired();
+
+        // Alerts Collection
+        builder.Entity<Notification>().OwnsMany(n => n.Alerts, a =>
+        {
+            a.WithOwner().HasForeignKey("NotificationId");
+            a.HasKey("Id");
+            a.Property(al => al.Id).ValueGeneratedOnAdd();
+            a.Property(al => al.TriggeredAt).IsRequired();
+            a.Property(al => al.Panic).IsRequired();
+        });
+
+        // Announcements Collection
+        builder.Entity<Notification>().OwnsMany(n => n.Announcements, an =>
+        {
+            an.WithOwner().HasForeignKey("NotificationId");
+            an.HasKey("Id");
+            an.Property(ann => ann.Id).ValueGeneratedOnAdd();
+            an.Property(ann => ann.PublishedAt).IsRequired();
+            an.OwnsOne(ann => ann.RouteId, 
+                ri => { ri.Property(r => r.Identifier).HasColumnName("RouteId").IsRequired(); });
+            an.OwnsOne(ann => ann.Message, 
+                mi => { mi.Property(m => m.Content).HasColumnName("Message").HasMaxLength(1000).IsRequired(); });
+        });
     }
 }
