@@ -37,6 +37,14 @@ public class NotificationCommandService(
 
     public async Task<Result<Notification>> Handle(MarkNotificationDeliveredCommand command, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var notification = await notificationRepository.FindByIdAsync(command.NotificationId);
+        if (notification is null) return Result<Notification>.Failure(NotificationError.NotificationNotFound, "Notification not found");
+        
+        notification.MarkDelivered();
+        
+        notificationRepository.Update(notification);
+        await unitOfWork.CompleteAsync(cancellationToken);
+        
+        return Result<Notification>.Success(notification);
     }
 }
