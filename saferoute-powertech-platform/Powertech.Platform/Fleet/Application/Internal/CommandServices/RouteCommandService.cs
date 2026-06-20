@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using Powertech.Platform.Fleet.Application.CommandServices;
 using Powertech.Platform.Fleet.Domain.Model;
 using Powertech.Platform.Fleet.Domain.Model.Commands;
+using Powertech.Platform.Fleet.Domain.Model.Entities;
+using Powertech.Platform.Fleet.Domain.Model.ValueObjects;
 using Powertech.Platform.Fleet.Domain.Repositories;
 using Powertech.Platform.Resources.Errors;
 using Powertech.Platform.Shared.Application.Model;
@@ -30,14 +31,82 @@ public class RouteCommandService(
     : IRouteCommandService
 {
     /// <inheritdoc />
+    public async Task<Result<Route>> Handle(CreateRouteCommand command, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var route = new Route(command);
+            await routeRepository.AddAsync(route, cancellationToken);
+            await unitOfWork.CompleteAsync(cancellationToken);
+            return Result<Route>.Success(route);
+        }
+        catch (ArgumentException ex)
+        {
+            return Result<Route>.Failure(FleetError.InvalidRouteData, ex.Message);
+        }
+        catch (OperationCanceledException)
+        {
+            return Result<Route>.Failure(FleetError.OperationCancelled,
+                localizer[nameof(FleetError.OperationCancelled)]);
+        }
+        catch (DbUpdateException)
+        {
+            return Result<Route>.Failure(FleetError.DatabaseError, localizer[nameof(FleetError.DatabaseError)]);
+        }
+        catch (Exception)
+        {
+            return Result<Route>.Failure(FleetError.InternalServerError,
+                localizer[nameof(FleetError.InternalServerError)]);
+        }
+    }
+
+    /// <inheritdoc />
+    public Task<Result<Route>> Handle(AddStopCommand command, CancellationToken cancellationToken) =>
+        MutateAsync(command.RouteId,
+            route => route.AddStop(command.Name, new Coordinates(command.Latitude, command.Longitude)),
+            cancellationToken);
+
+    /// <inheritdoc />
+    public Task<Result<Route>> Handle(RemoveStopCommand command, CancellationToken cancellationToken) =>
+        MutateAsync(command.RouteId, route => route.RemoveStop(new StopId(command.StopId)), cancellationToken);
+
+    /// <inheritdoc />
+    public Task<Result<Route>> Handle(AssignVehicleCommand command, CancellationToken cancellationToken) =>
+        MutateAsync(command.RouteId,
+            route => route.AssignVehicle(new Vehicle(route.OrganizationId, command.Plate, command.Model,
+                command.Brand, command.Capacity)),
+            cancellationToken);
+
+    /// <inheritdoc />
+    public Task<Result<Route>> Handle(AssignDriverCommand command, CancellationToken cancellationToken) =>
+        MutateAsync(command.RouteId, route => route.AssignDriver(new DriverId(command.DriverId)), cancellationToken);
+
+    /// <inheritdoc />
     public Task<Result<Route>> Handle(AssignStudentsToRouteCommand command, CancellationToken cancellationToken) =>
-        MutateAsync(command.RouteId, route => route.AssignStudent(new ChildId(command.ChildId)), cancellationToken);
+        MutateAsync(command.RouteId, route => route.AssignChild(new ChildId(command.ChildId)), cancellationToken);
 
     /// <inheritdoc />
     public Task<Result<Route>> Handle(RemoveStudentsFromRouteCommand command, CancellationToken cancellationToken) =>
-        MutateAsync(command.RouteId, route => route.RemoveStudent(new ChildId(command.ChildId)), cancellationToken);
+        MutateAsync(command.RouteId, route => route.RemoveChild(new ChildId(command.ChildId)), cancellationToken);
 
     /// <inheritdoc />
+    public Task<Result<Route>> Handle(DefineServiceDaysCommand command, CancellationToken cancellationToken) =>
+        MutateAsync(command.RouteId, route => route.DefineServiceDays(new ServiceDays(command.Days)),
+            cancellationToken);
+
+    /// <inheritdoc />
+    public Task<Result<Route>> Handle(SetDepartureTimeCommand command, CancellationToken cancellationToken) =>
+        MutateAsync(command.RouteId, route => route.SetDepartureTime(new DepartureTime(command.DepartureTime)),
+            cancellationToken);
+
+    /// <inheritdoc />
+    public Task<Result<Route>> Handle(ActivateRouteCommand command, CancellationToken cancellationToken) =>
+        MutateAsync(command.RouteId, route => route.Activate(), cancellationToken);
+
+    /// <inheritdoc />
+    public Task<Result<Route>> Handle(DeactivateRouteCommand command, CancellationToken cancellationToken) =>
+        MutateAsync(command.RouteId, route => route.Deactivate(), cancellationToken);
+
     /// <summary>
     ///     Shared workflow for commands that load an existing route, mutate it through a domain
     ///     behavior and persist the change, mapping any failure to a typed result.

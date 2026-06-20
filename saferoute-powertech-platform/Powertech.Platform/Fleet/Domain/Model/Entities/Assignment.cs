@@ -59,7 +59,7 @@ public class Assignment
 
     /// <summary>Assigns a child to the route. Idempotent: assigning the same child twice is a no-op.</summary>
     /// <param name="childId">The child to assign.</param>
-    public void AssignStudent(ChildId childId)
+    public void AssignChild(ChildId childId)
     {
         if (!ChildIds.Contains(childId.Identifier))
             ChildIds.Add(childId.Identifier);
@@ -67,7 +67,7 @@ public class Assignment
 
     /// <summary>Removes a child from the route.</summary>
     /// <param name="childId">The child to remove.</param>
-    public void RemoveStudent(ChildId childId) => ChildIds.Remove(childId.Identifier);
+    public void RemoveChild(ChildId childId) => ChildIds.Remove(childId.Identifier);
 
     /// <summary>Returns the driver assigned to the route.</summary>
     public DriverId GetDriverId() => DriverId;
