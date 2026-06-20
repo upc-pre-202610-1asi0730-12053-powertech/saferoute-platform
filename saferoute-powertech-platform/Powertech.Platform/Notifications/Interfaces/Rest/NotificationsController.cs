@@ -69,9 +69,17 @@ public class NotificationsController(
     }
 
     [HttpPost("{notificationId:guid}/alerts")]
-    public async Task<IActionResult> TriggerAlert(Guid notificationId, TriggerAlertResource resource, CancellationToken cancellationToken)
+    public async Task<IActionResult> TriggerAlert(Guid notificationId, [FromBody] TriggerAlertResource resource, CancellationToken cancellationToken)
     {
         var result = await commandService.Handle(new TriggerAlertCommand(notificationId, resource.Panic), cancellationToken);
+        return NotificationActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
+            notification => Ok(NotificationResourceFromEntityAssembler.ToResourceFromEntity(notification)));
+    }
+
+    [HttpPost("{notificationId:guid}/announcements")]
+    public async Task<IActionResult> PublishAnnouncement(Guid notificationId, [FromBody] PublishAnnouncementResource resource, CancellationToken cancellationToken)
+    {
+        var result = await commandService.Handle(new PublishAnnouncementCommand(notificationId, resource.RouteId, resource.Message), cancellationToken);
         return NotificationActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
             notification => Ok(NotificationResourceFromEntityAssembler.ToResourceFromEntity(notification)));
     }
