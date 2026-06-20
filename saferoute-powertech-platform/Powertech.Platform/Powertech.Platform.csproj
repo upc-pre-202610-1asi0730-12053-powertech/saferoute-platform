@@ -27,6 +27,7 @@
 
     <ItemGroup>
       <Folder Include="Migrations\" />
+      <Folder Include="Stakeholder\Application\" />
     </ItemGroup>
 
 </Project>
