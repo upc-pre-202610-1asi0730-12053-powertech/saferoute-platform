@@ -1,5 +1,5 @@
-﻿using Safer_Route_Platform.Fleet.Domain.Model.ValueObjects;
-using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
+﻿using Powertech.Platform.Fleet.Domain.Model.ValueObjects;
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
 
 namespace Powertech.Platform.Fleet.Domain.Model.Entities;
 

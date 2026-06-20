@@ -1,18 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using Safer_Route_Platform.Fleet.Application.CommandServices;
-using Safer_Route_Platform.Fleet.Domain.Model;
-using Route = Safer_Route_Platform.Fleet.Domain.Model.Aggregates.Route;
-using Safer_Route_Platform.Fleet.Domain.Model.Commands;
-using Safer_Route_Platform.Fleet.Domain.Model.Entities;
-using Safer_Route_Platform.Fleet.Domain.Model.ValueObjects;
-using Safer_Route_Platform.Fleet.Domain.Repositories;
-using Safer_Route_Platform.Shared.Application.Model;
-using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
-using Safer_Route_Platform.Shared.Domain.Repositories;
-using Safer_Route_Platform.Shared.Resources.Errors;
+using Powertech.Platform.Fleet.Domain.Model;
+using Powertech.Platform.Fleet.Domain.Model.Commands;
+using Powertech.Platform.Fleet.Domain.Model.Entities;
+using Powertech.Platform.Fleet.Domain.Model.ValueObjects;
+using Powertech.Platform.Fleet.Domain.Repositories;
+using Powertech.Platform.Resources.Errors;
+using Powertech.Platform.Shared.Application.Model;
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
+using Powertech.Platform.Shared.Domain.Repositories;
+using Route = Powertech.Platform.Fleet.Domain.Model.Aggregates.Route;
 
-namespace Safer_Route_Platform.Fleet.Application.Internal.CommandServices;
+namespace Powertech.Platform.Fleet.Application.Internal.CommandServices;
 
 /// <summary>
 ///     Default implementation of <see cref="IRouteCommandService" />.
@@ -83,11 +82,11 @@ public class RouteCommandService(
         MutateAsync(command.RouteId, route => route.AssignDriver(new DriverId(command.DriverId)), cancellationToken);
 
     /// <inheritdoc />
-    public Task<Result<Route>> Handle(AssignChildToRouteCommand command, CancellationToken cancellationToken) =>
+    public Task<Result<Route>> Handle(AssignStudentsToRouteCommand command, CancellationToken cancellationToken) =>
         MutateAsync(command.RouteId, route => route.AssignChild(new ChildId(command.ChildId)), cancellationToken);
 
     /// <inheritdoc />
-    public Task<Result<Route>> Handle(RemoveChildFromRouteCommand command, CancellationToken cancellationToken) =>
+    public Task<Result<Route>> Handle(RemoveStudentsFromRouteCommand command, CancellationToken cancellationToken) =>
         MutateAsync(command.RouteId, route => route.RemoveChild(new ChildId(command.ChildId)), cancellationToken);
 
     /// <inheritdoc />

@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.OpenApi;
-using Powertech.Platform.Fleet.Application.CommandServices;
 using Powertech.Platform.Fleet.Application.Internal.CommandServices;
+using Powertech.Platform.Fleet.Application.Internal.QueryServices;
+using Powertech.Platform.Fleet.Application.QueryServices;
 using Powertech.Platform.Fleet.Domain.Repositories;
 using Powertech.Platform.Fleet.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Powertech.Platform.Resources.Errors;
@@ -104,6 +105,7 @@ builder.Services.AddScoped<ITripQueryService, TripQueryService>();
 // Fleet bounded context
 builder.Services.AddScoped<IRouteRepository, RouteRepository>();
 builder.Services.AddScoped<IRouteCommandService, RouteCommandService>();
+builder.Services.AddScoped<IRouteQueryService, RouteQueryService>();
 
 var app = builder.Build();
 

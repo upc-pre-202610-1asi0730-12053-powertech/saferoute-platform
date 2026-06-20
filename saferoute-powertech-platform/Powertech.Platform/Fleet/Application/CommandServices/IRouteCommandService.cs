@@ -1,8 +1,6 @@
-﻿using Route = Safer_Route_Platform.Fleet.Domain.Model.Aggregates.Route;
-using Safer_Route_Platform.Fleet.Domain.Model.Commands;
-using Safer_Route_Platform.Shared.Application.Model;
-
-namespace Safer_Route_Platform.Fleet.Application.CommandServices;
+﻿using Powertech.Platform.Fleet.Domain.Model.Commands;
+using Powertech.Platform.Shared.Application.Model;
+using Route = Powertech.Platform.Fleet.Domain.Model.Aggregates.Route;
 
 /// <summary>
 ///     Application service that handles the write operations (commands) of the Fleet context.
@@ -29,10 +27,10 @@ public interface IRouteCommandService
     Task<Result<Route>> Handle(AssignDriverCommand command, CancellationToken cancellationToken);
 
     /// <summary>Handles assigning a child to a route.</summary>
-    Task<Result<Route>> Handle(AssignChildToRouteCommand command, CancellationToken cancellationToken);
+    Task<Result<Route>> Handle(AssignStudentsToRouteCommand command, CancellationToken cancellationToken);
 
     /// <summary>Handles removing a child from a route.</summary>
-    Task<Result<Route>> Handle(RemoveChildFromRouteCommand command, CancellationToken cancellationToken);
+    Task<Result<Route>> Handle(RemoveStudentsFromRouteCommand command, CancellationToken cancellationToken);
 
     /// <summary>Handles defining the service days of a route.</summary>
     Task<Result<Route>> Handle(DefineServiceDaysCommand command, CancellationToken cancellationToken);

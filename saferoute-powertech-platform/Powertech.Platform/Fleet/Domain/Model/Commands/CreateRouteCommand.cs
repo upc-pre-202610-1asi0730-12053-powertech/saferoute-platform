@@ -1,4 +1,4 @@
-﻿namespace Safer_Route_Platform.Fleet.Domain.Model.Commands;
+﻿namespace Powertech.Platform.Fleet.Domain.Model.Commands;
 
 /// <summary>
 ///     Command to define (create) a new route in the draft state.

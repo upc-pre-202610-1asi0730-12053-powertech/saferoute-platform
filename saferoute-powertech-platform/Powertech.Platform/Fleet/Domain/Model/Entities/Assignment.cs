@@ -1,7 +1,7 @@
-﻿using Safer_Route_Platform.Fleet.Domain.Model.ValueObjects;
-using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
+﻿using Powertech.Platform.Fleet.Domain.Model.ValueObjects;
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
 
-namespace Safer_Route_Platform.Fleet.Domain.Model.Entities;
+namespace Powertech.Platform.Fleet.Domain.Model.Entities;
 
 /// <summary>
 ///     Entity representing the driver-and-children assignment of a route.

@@ -1,17 +1,16 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Safer_Route_Platform.Fleet.Application.CommandServices;
-using Safer_Route_Platform.Fleet.Application.QueryServices;
-using Safer_Route_Platform.Fleet.Domain.Model.Commands;
-using Safer_Route_Platform.Fleet.Domain.Model.Queries;
-using Safer_Route_Platform.Fleet.Interfaces.Rest.Resources;
-using Safer_Route_Platform.Fleet.Interfaces.Rest.Transform;
-using Safer_Route_Platform.Shared.Interfaces.Rest.ProblemDetails;
-using Safer_Route_Platform.Shared.Resources.Errors;
+using Powertech.Platform.Fleet.Application.QueryServices;
+using Powertech.Platform.Fleet.Domain.Model.Commands;
+using Powertech.Platform.Fleet.Domain.Model.Queries;
+using Powertech.Platform.Fleet.Interfaces.Rest.Resources;
+using Powertech.Platform.Fleet.Interfaces.Rest.Transform;
+using Powertech.Platform.Resources.Errors;
+using Powertech.Platform.Shared.Interfaces.Rest.ProblemDetails;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Safer_Route_Platform.Fleet.Interfaces.Rest;
+namespace Powertech.Platform.Fleet.Interfaces.Rest;
 
 /// <summary>
 ///     REST endpoints for the Fleet &amp; Route Planning bounded context.
@@ -143,10 +142,10 @@ public class RoutesController(
     [SwaggerResponse(200, "The child was assigned.", typeof(RouteResource))]
     [SwaggerResponse(404, "The route was not found.")]
     [SwaggerResponse(409, "The route is not editable.")]
-    public async Task<IActionResult> AssignChild(Guid routeId, AssignChildResource resource,
+    public async Task<IActionResult> AssignChild(Guid routeId, AssignStudentsResource resource,
         CancellationToken cancellationToken)
     {
-        var command = new AssignChildToRouteCommand(routeId, Guid.Parse(resource.ChildId));
+        var command = new AssignStudentsToRouteCommand(routeId, Guid.Parse(resource.ChildId));
         var result = await routeCommandService.Handle(command, cancellationToken);
         return FleetActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
             route => Ok(RouteResourceFromEntityAssembler.ToResourceFromEntity(route)));
@@ -160,7 +159,7 @@ public class RoutesController(
     [SwaggerResponse(409, "The route is not editable.")]
     public async Task<IActionResult> RemoveChild(Guid routeId, Guid childId, CancellationToken cancellationToken)
     {
-        var result = await routeCommandService.Handle(new RemoveChildFromRouteCommand(routeId, childId),
+        var result = await routeCommandService.Handle(new RemoveStudentsFromRouteCommand(routeId, childId),
             cancellationToken);
         return FleetActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
             route => Ok(RouteResourceFromEntityAssembler.ToResourceFromEntity(route)));

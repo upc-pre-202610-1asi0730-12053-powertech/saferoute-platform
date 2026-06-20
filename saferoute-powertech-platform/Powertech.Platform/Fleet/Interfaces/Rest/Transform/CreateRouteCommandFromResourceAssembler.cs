@@ -1,4 +1,7 @@
-﻿namespace Powertech.Platform.Fleet.Interfaces.Rest.Transform;
+﻿using Powertech.Platform.Fleet.Domain.Model.Commands;
+using Powertech.Platform.Fleet.Interfaces.Rest.Resources;
+
+namespace Powertech.Platform.Fleet.Interfaces.Rest.Transform;
 
 /// <summary>
 ///     Assembler that converts a <see cref="CreateRouteResource" /> into a <see cref="CreateRouteCommand" />.

@@ -1,4 +1,4 @@
-﻿namespace Safer_Route_Platform_Route_Platform.Fleet.Domain.Model.Commands;
+﻿namespace Powertech.Platform.Fleet.Domain.Model.Commands;
 
 /// <summary>
 ///     Command to assign the operating driver to a route.

@@ -1,9 +1,9 @@
-﻿using Safer_Route_Platform.Fleet.Domain.Model.Commands;
-using Safer_Route_Platform.Fleet.Domain.Model.Entities;
-using Safer_Route_Platform.Fleet.Domain.Model.ValueObjects;
-using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
+﻿using Powertech.Platform.Fleet.Domain.Model.Commands;
+using Powertech.Platform.Fleet.Domain.Model.Entities;
+using Powertech.Platform.Fleet.Domain.Model.ValueObjects;
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
 
-namespace Safer_Route_Platform.Fleet.Domain.Model.Aggregates;
+namespace Powertech.Platform.Fleet.Domain.Model.Aggregates;
 
 /// <summary>
 ///     Route Aggregate Root.

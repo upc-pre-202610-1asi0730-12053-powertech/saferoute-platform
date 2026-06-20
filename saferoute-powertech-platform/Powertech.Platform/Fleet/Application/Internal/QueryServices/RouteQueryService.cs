@@ -1,10 +1,10 @@
-﻿using Safer_Route_Platform.Fleet.Application.QueryServices;
-using Route = Safer_Route_Platform.Fleet.Domain.Model.Aggregates.Route;
-using Safer_Route_Platform.Fleet.Domain.Model.Queries;
-using Safer_Route_Platform.Fleet.Domain.Repositories;
-using Safer_Route_Platform.Shared.Domain.Model.ValueObjects;
+﻿using Powertech.Platform.Fleet.Application.QueryServices;
+using Powertech.Platform.Fleet.Domain.Model.Queries;
+using Powertech.Platform.Fleet.Domain.Repositories;
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
+using Route = Powertech.Platform.Fleet.Domain.Model.Aggregates.Route;
 
-namespace Safer_Route_Platform.Fleet.Application.Internal.QueryServices;
+namespace Powertech.Platform.Fleet.Application.Internal.QueryServices;
 
 /// <summary>
 ///     Default implementation of <see cref="IRouteQueryService" />.

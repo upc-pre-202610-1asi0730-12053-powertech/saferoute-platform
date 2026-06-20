@@ -1,4 +1,4 @@
-﻿namespace Safer_Route_Platform.Fleet.Domain.Model.Commands;
+﻿namespace Powertech.Platform.Fleet.Domain.Model.Commands;
 
 /// <summary>
 ///     Command to set the departure time of a route.

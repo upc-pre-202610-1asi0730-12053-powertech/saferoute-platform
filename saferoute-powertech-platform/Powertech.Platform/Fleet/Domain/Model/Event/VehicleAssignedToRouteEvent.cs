@@ -1,6 +1,6 @@
-﻿using Safer_Route_Platform.Shared.Domain.Model.Events;
+﻿using Powertech.Platform.Shared.Domain.Model.Events;
 
-namespace Safer_Route_Platform.Fleet.Domain.Model.Events;
+namespace Powertech.Platform.Fleet.Domain.Model.Events;
 
 /// <summary>Domain event raised when a vehicle is assigned to a route.</summary>
 /// <param name="RouteId">The route the vehicle was assigned to.</param>
