@@ -10,4 +10,5 @@ public interface INotificationCommandService
     Task<Result<Notification>> Handle(DispatchNotificationCommand command, CancellationToken cancellationToken = default);
     Task<Result<Notification>> Handle(MarkNotificationDeliveredCommand command, CancellationToken cancellationToken = default);
     Task<Result<Notification>> Handle(TriggerAlertCommand command, CancellationToken cancellationToken = default);
+    Task<Result<Notification>> Handle(PublishAnnouncementCommand command, CancellationToken cancellationToken = default);
 }

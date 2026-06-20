@@ -60,4 +60,9 @@ public class NotificationCommandService(
         
         return Result<Notification>.Success(notification);
     }
+
+    public async Task<Result<Notification>> Handle(PublishAnnouncementCommand command, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }
