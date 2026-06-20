@@ -14,4 +14,10 @@ public interface ITripQueryService
     /// <returns>The trip if found; otherwise <c>null</c>.</returns>
     Task<TripAggregate?> Handle(GetTripByIdQuery query, CancellationToken cancellationToken);
     
+    /// <summary>Handles retrieving all trips.</summary>
+    Task<IEnumerable<TripAggregate>> Handle(GetAllTripsQuery query, CancellationToken cancellationToken);
+    
+    /// <summary>Handles retrieving all trips for a given route.</summary>
+    Task<IEnumerable<TripAggregate>> Handle(GetTripsByRouteIdQuery query, CancellationToken cancellationToken);
+    
 }

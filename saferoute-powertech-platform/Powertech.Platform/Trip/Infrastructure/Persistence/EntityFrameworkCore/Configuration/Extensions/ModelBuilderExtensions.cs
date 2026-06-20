@@ -5,6 +5,8 @@ using TripAggregate = Powertech.Platform.Trip.Domain.Model.Aggregates.Trip;
 
 namespace Powertech.Platform.Trip.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
+
+
 /// <summary>
 ///     EF Core model configuration for the Trip bounded context.
 /// </summary>
@@ -56,6 +58,11 @@ public static class ModelBuilderExtensions
 
             trip.Property(t => t.StartTime);
             trip.Property(t => t.EndTime);
+            
+            // Cross-context foreign keys (DB-level integrity only; no navigation, no cascade).
+            // Connects Trip → Fleet (route) and Trip → Stakeholder (driver).
+            trip.HasOne<Route>().WithMany().HasForeignKey(t => t.RouteId)
+                .OnDelete(DeleteBehavior.Restrict);
             
             // Owned collection: boarding attendances.
             trip.OwnsMany(t => t.Attendances, attendance =>

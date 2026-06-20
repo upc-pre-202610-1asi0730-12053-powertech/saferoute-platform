@@ -78,6 +78,19 @@ public class TripsController(
             found => Ok(TripResourceFromEntityAssembler.ToResourceFromEntity(found)));
     }
     
+    /// <summary>Gets all trips, optionally filtered by route.</summary>
+    [HttpGet]
+    [SwaggerOperation("Get Trips", "Gets all trips, optionally filtered by route id.", OperationId = "GetTrips")]
+    [SwaggerResponse(200, "The trips were found.", typeof(IEnumerable<TripResource>))]
+    public async Task<IActionResult> GetTrips([FromQuery] Guid? routeId, CancellationToken cancellationToken)
+    {
+        var trips = routeId is null
+            ? await tripQueryService.Handle(new GetAllTripsQuery(), cancellationToken)
+            : await tripQueryService.Handle(new GetTripsByRouteIdQuery(routeId.Value), cancellationToken);
+
+        return Ok(trips.Select(TripResourceFromEntityAssembler.ToResourceFromEntity));
+    }
+    
     /// <summary>Records a child's boarding status during a trip.</summary>
     [HttpPost("{tripId:guid}/boarding")]
     [SwaggerOperation("Record Boarding", "Records a child's boarding status during a trip.",

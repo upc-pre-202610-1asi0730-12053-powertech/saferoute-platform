@@ -18,4 +18,17 @@ public class TripQueryService(ITripRepository tripRepository) : ITripQueryServic
     {
         return await tripRepository.FindByTripIdAsync(new TripId(query.TripId), cancellationToken);
     }
+    
+    /// <inheritdoc />
+    public async Task<IEnumerable<TripAggregate>> Handle(GetAllTripsQuery query, CancellationToken cancellationToken)
+    {
+        return await tripRepository.ListAsync(cancellationToken);
+    }
+    
+    /// <inheritdoc />
+    public async Task<IEnumerable<TripAggregate>> Handle(GetTripsByRouteIdQuery query,
+        CancellationToken cancellationToken)
+    {
+        return await tripRepository.FindByRouteIdAsync(new RouteId(query.RouteId), cancellationToken);
+    }
 }

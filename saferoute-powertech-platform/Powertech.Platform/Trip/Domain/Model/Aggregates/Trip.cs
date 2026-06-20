@@ -119,6 +119,13 @@ public class Trip
         EndTime = DateTimeOffset.UtcNow;
     }
     
+    /// <summary>
+    ///     Records or updates the boarding status of a child. Idempotent per child: a subsequent
+    ///     record for the same child updates the existing attendance.
+    /// </summary>
+    /// <param name="childId">The child whose boarding is recorded.</param>
+    /// <param name="state">The boarding state to record.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the trip is not in progress.</exception>
     public void SetBoardingStatus(ChildId childId, BoardingState state)
     {
         if (!State.IsInProgress())
