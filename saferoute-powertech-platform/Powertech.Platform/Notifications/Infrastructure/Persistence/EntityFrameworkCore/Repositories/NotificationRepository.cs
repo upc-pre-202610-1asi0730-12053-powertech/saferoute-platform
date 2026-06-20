@@ -16,4 +16,13 @@ public class NotificationRepository(AppDbContext context)
             .Include(n => n.Announcements)
             .FirstOrDefaultAsync(n => n.Id.Identifier == id);
     }
+
+    public async Task<IEnumerable<Notification>> FindByParentIdAsync(Guid parentId)
+    {
+        return await Context.Set<Notification>()
+            .Include(n => n.Alerts)
+            .Include(n => n.Announcements)
+            .Where(n => n.ParentId.Identifier == parentId)
+            .ToListAsync();
+    }
 }
