@@ -19,3 +19,9 @@ public class RouteQueryService(IRouteRepository routeRepository) : IRouteQuerySe
     {
         return await routeRepository.FindByRouteIdAsync(new RouteId(query.RouteId), cancellationToken);
     }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<Route>> Handle(GetAllRoutesQuery query, CancellationToken cancellationToken)
+    {
+        return await routeRepository.ListAsync(cancellationToken);
+    }
