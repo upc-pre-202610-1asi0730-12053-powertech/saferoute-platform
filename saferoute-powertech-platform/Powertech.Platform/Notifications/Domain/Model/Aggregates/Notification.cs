@@ -44,4 +44,9 @@ public partial class Notification
     {
         DeliveryState = new NotificationDeliveryState("Dispatched");
     }
+
+    public void MarkDelivered()
+    {
+        DeliveryState = new NotificationDeliveryState("Delivered");
+    }
 }
