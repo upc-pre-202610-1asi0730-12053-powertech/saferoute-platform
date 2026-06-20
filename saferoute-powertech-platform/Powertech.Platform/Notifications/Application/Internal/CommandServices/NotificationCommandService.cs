@@ -47,4 +47,9 @@ public class NotificationCommandService(
         
         return Result<Notification>.Success(notification);
     }
+
+    public async Task<Result<Notification>> Handle(TriggerAlertCommand command, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
 }
