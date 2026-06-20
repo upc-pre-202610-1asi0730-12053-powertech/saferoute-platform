@@ -6,4 +6,5 @@ namespace Powertech.Platform.Notifications.Domain.Repositories;
 public interface INotificationRepository : IBaseRepository<Notification>
 {
     Task<Notification?> FindByIdAsync(Guid id);
+    Task<IEnumerable<Notification>> FindByParentIdAsync(Guid parentId);
 }
