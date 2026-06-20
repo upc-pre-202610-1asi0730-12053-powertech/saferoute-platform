@@ -9,4 +9,11 @@ namespace Powertech.Platform.Notifications.Infrastructure.Persistence.EntityFram
 public class NotificationRepository(AppDbContext context)
     : BaseRepository<Notification>(context), INotificationRepository
 {
+    public async Task<Notification?> FindByIdAsync(Guid id)
+    {
+        return await Context.Set<Notification>()
+            .Include(n => n.Alerts)
+            .Include(n => n.Announcements)
+            .FirstOrDefaultAsync(n => n.Id.Identifier == id);
+    }
 }
