@@ -7,4 +7,5 @@ namespace Powertech.Platform.Notifications.Application.CommandServices;
 public interface INotificationCommandService
 {
     Task<Result<Notification>> Handle(CreateNotificationCommand command, CancellationToken cancellationToken = default);
+    Task<Result<Notification>> Handle(DispatchNotificationCommand command, CancellationToken cancellationToken = default);
 }
