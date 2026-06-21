@@ -1,5 +1,7 @@
 namespace Powertech.Platform.Shared.Domain.Repositories;
 
+///OPERACIONES CRUD
+
 /// <summary>
 ///     Base repository interface for all repositories
 /// </summary>
@@ -21,6 +23,7 @@ public interface IBaseRepository<TEntity>
     /// <returns></returns>
     Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
 
+
     /// <summary>
     ///     Find an entity by its id
     /// </summary>
@@ -33,7 +36,9 @@ public interface IBaseRepository<TEntity>
     /// </returns>
     Task<TEntity?> FindByIdAsync(int id, CancellationToken cancellationToken = default);
 
+
     void Update(TEntity entity);
+
 
     /// <summary>
     ///     Remove an entity from the repository
@@ -42,6 +47,7 @@ public interface IBaseRepository<TEntity>
     ///     The entity to remove
     /// </param>
     void Remove(TEntity entity);
+
 
     /// <summary>
     ///     List all entities in the repository

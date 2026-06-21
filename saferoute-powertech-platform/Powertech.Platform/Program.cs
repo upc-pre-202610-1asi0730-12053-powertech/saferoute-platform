@@ -1,3 +1,5 @@
+using Cortex.Mediator.Commands;
+using Cortex.Mediator.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.OpenApi;
@@ -6,14 +8,27 @@ using Powertech.Platform.Fleet.Application.Internal.QueryServices;
 using Powertech.Platform.Fleet.Application.QueryServices;
 using Powertech.Platform.Fleet.Domain.Repositories;
 using Powertech.Platform.Fleet.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using Powertech.Platform.Notifications.Application.CommandServices;
+using Powertech.Platform.Notifications.Application.Internal.CommandServices;
+using Powertech.Platform.Notifications.Application.Internal.QueryServices;
+using Powertech.Platform.Notifications.Application.QueryServices;
+using Powertech.Platform.Notifications.Domain.Repositories;
+using Powertech.Platform.Notifications.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Powertech.Platform.Resources.Errors;
 using Powertech.Platform.Resources.Shared;
 using Powertech.Platform.Shared.Domain.Repositories;
 using Powertech.Platform.Shared.Infrastructure.Interfaces.AspNetCore.Configuration;
+using Powertech.Platform.Shared.Infrastructure.Mediator.Cortex.Configuration;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Powertech.Platform.Shared.Infrastructure.Pipeline.Middleware.Extensions;
 using Powertech.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Powertech.Platform.Stakeholder.Application.CommandServices;
+using Powertech.Platform.Stakeholder.Application.Internal.CommandServices;
+using Powertech.Platform.Stakeholder.Application.Internal.QueryServices;
+using Powertech.Platform.Stakeholder.Application.QueryServices;
+using Powertech.Platform.Stakeholder.Domain.Repositories;
+using Powertech.Platform.Stakeholder.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using Powertech.Platform.Subscription.Application.CommandServices;
 using Powertech.Platform.Subscription.Application.Internal.CommandServices;
 using Powertech.Platform.Subscription.Application.Internal.QueryServices;
@@ -69,10 +84,11 @@ builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 // ---------------------------------------------------------------------------
 // Localization
 // ---------------------------------------------------------------------------
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddLocalization();
 builder.Services.AddSingleton<IStringLocalizer<ErrorMessages>, StringLocalizer<ErrorMessages>>();
 builder.Services.AddSingleton<IStringLocalizer<CommonMessages>, StringLocalizer<CommonMessages>>();
 
+// Custom RFC 7807 problem details factory.
 builder.Services.AddSingleton<ProblemDetailsFactory>();
 
 // ---------------------------------------------------------------------------
@@ -94,6 +110,7 @@ builder.Services.AddSwaggerGen(options =>
             }
         });
     options.EnableAnnotations();
+    options.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
 });
 
 // ---------------------------------------------------------------------------
@@ -102,6 +119,13 @@ builder.Services.AddSwaggerGen(options =>
 
 // Shared
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Stakeholder bounded context
+builder.Services.AddScoped<IParentRepository, ParentRepository>();
+builder.Services.AddScoped<IDriverRepository, DriverRepository>();
+builder.Services.AddScoped<IStudentGroupRepository, StudentGroupRepository>();
+builder.Services.AddScoped<IStakeholderCommandService, StakeholderCommandService>();
+builder.Services.AddScoped<IStakeholderQueryService, StakeholderQueryService>();
 
 // Trip bounded context
 builder.Services.AddScoped<ITripRepository, TripRepository>();
@@ -118,6 +142,17 @@ builder.Services.AddScoped<IPlanRepository, PlanRepository>();
 builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
 builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
+
+// Notifications bounded context
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationCommandService, NotificationCommandService>();
+builder.Services.AddScoped<INotificationQueryService, NotificationQueryService>();
+
+// ---------------------------------------------------------------------------
+// Mediator (Cortex) — command pipeline behaviors and event handling
+// ---------------------------------------------------------------------------
+builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(LoggingCommandBehavior<>));
+builder.Services.AddCortexMediator([typeof(Program)]);
 
 var app = builder.Build();
 
@@ -166,9 +201,3 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
-// (Fragmento a agregar en la sección de inyección de dependencias)
-
-// Notification Bounded Context
-builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<INotificationCommandService, NotificationCommandService>();
-builder.Services.AddScoped<INotificationQueryService, NotificationQueryService>();

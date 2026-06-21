@@ -1,6 +1,8 @@
 using System.Text.RegularExpressions;
 
+
 namespace Powertech.Platform.Shared.Infrastructure.Interfaces.AspNetCore.Configuration.Extensions;
+
 
 /// <summary>
 ///     Extension methods for <see cref="string" />.
@@ -22,6 +24,7 @@ public static partial class StringExtensions
             .Trim()
             .ToLower();
     }
+
 
     [GeneratedRegex("(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z])", RegexOptions.Compiled)]
     private static partial Regex KebabCaseRegex();

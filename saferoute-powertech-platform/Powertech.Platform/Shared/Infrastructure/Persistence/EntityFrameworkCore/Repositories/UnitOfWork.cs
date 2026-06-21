@@ -1,7 +1,9 @@
 using Powertech.Platform.Shared.Domain.Repositories;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 
+
 namespace Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+
 
 /// <summary>
 ///     Unit of work for the application.

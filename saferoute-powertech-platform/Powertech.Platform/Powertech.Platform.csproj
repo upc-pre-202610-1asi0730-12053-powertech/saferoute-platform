@@ -30,4 +30,19 @@
       <Folder Include="Stakeholder\Application\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Update="Shared\Resources\Errors\ErrorMessages.en.resx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\Resources\Errors\ErrorMessages.es.resx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\Resources\CommonMessages.en.resx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Shared\Resources\CommonMessages.es.resx">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

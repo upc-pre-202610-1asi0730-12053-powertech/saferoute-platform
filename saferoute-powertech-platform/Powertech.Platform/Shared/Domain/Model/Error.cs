@@ -1,5 +1,8 @@
 namespace Powertech.Platform.Shared.Domain.Model;
 
+/// ERRORES DEL DOMAIN
+/// DEVOLVIENDONOS EL LENGUAJE UBIQUO
+
 /// <summary>
 ///     Represents a domain error.
 /// </summary>

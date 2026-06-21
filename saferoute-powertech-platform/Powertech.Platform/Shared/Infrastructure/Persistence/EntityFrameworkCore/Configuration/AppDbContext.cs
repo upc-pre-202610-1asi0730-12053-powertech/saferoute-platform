@@ -1,12 +1,15 @@
-//using Powertech.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
-//using Powertech.Platform.Profiles.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
-//using Powertech.Platform.Publishing.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
-using Microsoft.EntityFrameworkCore;
 using Powertech.Platform.Trip.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using Powertech.Platform.Fleet.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Powertech.Platform.Notifications.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using Powertech.Platform.Stakeholder.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using Powertech.Platform.Subscription.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+
 
 namespace Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
+
 
 /// <summary>
 ///     Application database context for the Learning Center Platform
@@ -39,7 +42,11 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         base.OnModelCreating(builder);
 
         // Per-bounded-context model configuration (declared in each context's Infrastructure layer).
+        builder.ApplyStakeholderConfiguration();
         builder.ApplyTripConfiguration();
+        builder.ApplyFleetConfiguration();
+        builder.ApplySubscriptionConfiguration();
+        builder.ApplyNotificationConfiguration();
 
         // General Naming Convention for the database objects
         builder.UseSnakeCaseNamingConvention();
