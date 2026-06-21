@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Powertech.Platform.Notifications.Application.CommandServices;
 using Powertech.Platform.Notifications.Application.QueryServices;
@@ -6,11 +7,14 @@ using Powertech.Platform.Notifications.Domain.Model.Queries;
 using Powertech.Platform.Notifications.Interfaces.Rest.Resources;
 using Powertech.Platform.Notifications.Interfaces.Rest.Transform;
 using Powertech.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Powertech.Platform.Notifications.Interfaces.Rest;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[Produces(MediaTypeNames.Application.Json)]
+[SwaggerTag("Notification and communication endpoints.")]
 public class NotificationsController(
     INotificationCommandService commandService,
     INotificationQueryService queryService,
