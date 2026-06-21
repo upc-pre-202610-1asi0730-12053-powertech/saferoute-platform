@@ -7,17 +7,17 @@ package "SafeRoute.Trip.Domain.Model.Aggregates" {
     -organizationId: OrganizationId
     -routeId: RouteId
     -driverId: DriverId
-    -tripState: TripState
-    -startTime: DateTime
-    -endTime: DateTime
-    -attendances: List<Attendance>
-    -incidents: List<Incident>
+    -state: TripState
+    -startTime: DateTimeOffset
+    -endTime: DateTimeOffset
+    -attendances: IReadOnlyCollection<Attendance>
+    -incidents: IReadOnlyCollection<Incident>
     +Start(): void
     +Complete(): void
     +RecordBoarding(childId: ChildId, state: BoardingState): void
     +ReportIncident(description: IncidentDescription): void
-    +GetAttendanceSummary(): List<Attendance>
-    +GetIncidentLog(): List<Incident>
+    +GetAttendanceSummary(): IReadOnlyCollection<Attendance>
+    +GetIncidentLog(): IReadOnlyCollection<Incident>
     +IsInProgress(): bool
   }
 }
@@ -27,19 +27,18 @@ package "SafeRoute.Trip.Domain.Model.Entities" {
     -id: AttendanceId
     -childId: ChildId
     -boardingState: BoardingState
-    -boardedAt: DateTime
+    -boardedAt: DateTimeOffset
     +UpdateBoardingState(state: BoardingState): void
     +IsBoarded(): bool
-    +GetBoardingTime(): DateTime
+    +GetBoardingTime(): DateTimeOffset
   }
 
   entity "Incident" as Incident <<Entity>> {
     -id: IncidentId
     -description: IncidentDescription
-    -reportedAt: DateTime
-    +Report(): void
+    -reportedAt: DateTimeOffset
     +GetDescription(): string
-    +GetReportedAt(): DateTime
+    +GetReportedAt(): DateTimeOffset
   }
 }
 

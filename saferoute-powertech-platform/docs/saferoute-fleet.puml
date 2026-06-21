@@ -6,18 +6,24 @@ package "SafeRoute.Fleet.Domain.Model.Aggregates" {
     -id: RouteId
     -organizationId: OrganizationId
     -name: string
-    -routeState: RouteState
+    -state: RouteState
     -departureTime: DepartureTime
     -serviceDays: ServiceDays
     -vehicle: Vehicle
     -assignment: Assignment
-    -stops: List<Stop>
+    -stops: IReadOnlyCollection<Stop>
     +DefineRoute(name: string): void
-    +AddStop(stop: Stop): void
+    +AddStop(name: string, coordinates: Coordinates): Stop
     +RemoveStop(stopId: StopId): void
+    +AssignVehicle(vehicle: Vehicle): void
+    +AssignDriver(driverId: DriverId): void
+    +AssignChild(childId: ChildId): void
+    +RemoveChild(childId: ChildId): void
+    +DefineServiceDays(serviceDays: ServiceDays): void
+    +SetDepartureTime(departureTime: DepartureTime): void
     +Activate(): void
     +Deactivate(): void
-    +GetStopSequence(): List<Stop>
+    +GetStopSequence(): IReadOnlyList<Stop>
     +GetTotalStops(): int
   }
 }
@@ -27,10 +33,8 @@ package "SafeRoute.Fleet.Domain.Model.Entities" {
     -id: StopId
     -name: string
     -coordinates: Coordinates
-    -stopOrder: StopOrder
-    +GetNextStop(): Stop
+    -order: StopOrder
     +IsFirst(): bool
-    +IsLast(): bool
     +UpdateCoordinates(coordinates: Coordinates): void
   }
 
@@ -50,7 +54,7 @@ package "SafeRoute.Fleet.Domain.Model.Entities" {
   entity "Assignment" as Assignment <<Entity>> {
     -id: AssignmentId
     -driverId: DriverId
-    -children: List<ChildId>
+    -childIds: List<Guid>
     +AssignDriver(driverId: DriverId): void
     +AssignChild(childId: ChildId): void
     +RemoveChild(childId: ChildId): void

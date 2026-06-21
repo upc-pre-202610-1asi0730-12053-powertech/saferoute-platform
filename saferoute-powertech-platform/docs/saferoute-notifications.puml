@@ -10,12 +10,14 @@ package "SafeRoute.Notifications.Domain.Model.Aggregates" {
     -category: NotificationCategory
     -deliveryState: NotificationDeliveryState
     -message: NotificationMessage
-    -sentAt: DateTime
-    -alerts: List<Alert>
-    -announcements: List<Announcement>
+    -sentAt: DateTimeOffset
+    -alerts: IReadOnlyCollection<Alert>
+    -announcements: IReadOnlyCollection<Announcement>
     +Queue(): void
     +Dispatch(): void
     +MarkDelivered(): void
+    +TriggerAlert(panic: bool): void
+    +PublishAnnouncement(routeId: RouteId, message: NotificationMessage): void
     +IsDelivered(): bool
     +GetCategory(): string
     +GetMessage(): string
@@ -25,9 +27,10 @@ package "SafeRoute.Notifications.Domain.Model.Aggregates" {
 package "SafeRoute.Notifications.Domain.Model.Entities" {
   entity "Alert" as Alert <<Entity>> {
     -id: AlertId
-    -triggeredAt: DateTime
+    -triggeredAt: DateTimeOffset
+    -panic: bool
     +Trigger(): void
-    +GetTriggeredAt(): DateTime
+    +GetTriggeredAt(): DateTimeOffset
     +IsPanic(): bool
   }
 
@@ -35,10 +38,10 @@ package "SafeRoute.Notifications.Domain.Model.Entities" {
     -id: AnnouncementId
     -routeId: RouteId
     -message: NotificationMessage
-    -publishedAt: DateTime
+    -publishedAt: DateTimeOffset
     +Publish(): void
     +GetMessage(): string
-    +GetPublishedAt(): DateTime
+    +GetPublishedAt(): DateTimeOffset
   }
 }
 

@@ -7,8 +7,8 @@ package "SafeRoute.Subscription.Domain.Model.Aggregates" {
     -organizationId: OrganizationId
     -planId: PlanId
     -state: SubscriptionState
-    -startDate: DateTime
-    -endDate: DateTime
+    -startDate: DateTimeOffset
+    -endDate: DateTimeOffset
     +Activate(): void
     +Upgrade(planId: PlanId): void
     +Cancel(): void
@@ -19,7 +19,7 @@ package "SafeRoute.Subscription.Domain.Model.Aggregates" {
 
   entity "Plan" as Plan <<AggregateRoot>> {
     -id: PlanId
-    -planTier: PlanTier
+    -tier: PlanTier
     -routeQuota: RouteQuota
     -driverQuota: DriverQuota
     -price: decimal

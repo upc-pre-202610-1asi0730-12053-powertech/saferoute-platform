@@ -59,6 +59,13 @@ package "SafeRoute.Shared.Domain.Model.ValueObjects" {
     +ToString(): string
   }
 
+  class "ProfileId" as ProfileId <<ValueObject>> {
+    -value: Guid
+    +New(): ProfileId
+    +Equals(other: ProfileId): bool
+    +ToString(): string
+  }
+
   class "PlanId" as PlanId <<ValueObject>> {
     -value: Guid
     +New(): PlanId
@@ -69,8 +76,6 @@ package "SafeRoute.Shared.Domain.Model.ValueObjects" {
   class "FullName" as FullName <<ValueObject>> {
     -firstName: string
     -lastName: string
-    +GetFullName(): string
-    +IsValid(): bool
     +Equals(other: FullName): bool
     +ToString(): string
   }
@@ -78,7 +83,6 @@ package "SafeRoute.Shared.Domain.Model.ValueObjects" {
   class "Coordinates" as Coordinates <<ValueObject>> {
     -latitude: double
     -longitude: double
-    +IsValid(): bool
     +Equals(other: Coordinates): bool
     +ToString(): string
   }

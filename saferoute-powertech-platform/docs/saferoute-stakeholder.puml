@@ -9,12 +9,13 @@ package "SafeRoute.Stakeholder.Domain.Model.Aggregates" {
     -fullName: FullName
     -email: Email
     -phoneNumber: PhoneNumber
-    -children: List<Child>
+    -children: IReadOnlyCollection<Child>
     +AddChild(child: Child): void
     +RemoveChild(childId: ChildId): void
-    +GetChildren(): List<Child>
+    +GetChildren(): IReadOnlyCollection<Child>
     +GetFullName(): string
     +GetEmail(): string
+    +Update(fullName: FullName, email: Email, phoneNumber: PhoneNumber): void
   }
 }
 
@@ -27,10 +28,12 @@ package "SafeRoute.Stakeholder.Domain.Model.Entities" {
     -email: Email
     -phoneNumber: PhoneNumber
     -licenseNumber: LicenseNumber
+    -available: bool
     +IsAvailable(): bool
     +GetFullName(): string
     +GetLicenseNumber(): string
     +UpdatePhoneNumber(phone: PhoneNumber): void
+    +Update(fullName: FullName, email: Email, phoneNumber: PhoneNumber, licenseNumber: LicenseNumber, available: bool): void
   }
 
   entity "Child" as Child <<Entity>> {
@@ -48,7 +51,8 @@ package "SafeRoute.Stakeholder.Domain.Model.Entities" {
     -id: StudentGroupId
     -organizationId: OrganizationId
     -name: string
-    -children: List<ChildId>
+    -childIds: List<Guid>
+    -isFinalizedValue: bool
     +AddChild(childId: ChildId): void
     +RemoveChild(childId: ChildId): void
     +Finalize(): void

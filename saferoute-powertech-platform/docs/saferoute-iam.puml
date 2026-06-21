@@ -6,7 +6,7 @@ package "SafeRoute.IAM.Domain.Model.Aggregates" {
     -id: OrganizationId
     -name: OrganizationName
     -status: OrganizationStatus
-    -createdAt: DateTime
+    -createdAt: DateTimeOffset
     +Create(name: OrganizationName): void
     +Suspend(): void
     +Activate(): void
@@ -21,6 +21,7 @@ package "SafeRoute.IAM.Domain.Model.Aggregates" {
     -email: Email
     -passwordHash: PasswordHash
     -role: Role
+    -createdAt: DateTimeOffset
     +Register(): void
     +Authenticate(password: string): bool
     +ChangeRole(role: Role): void
@@ -32,7 +33,7 @@ package "SafeRoute.IAM.Domain.Model.Aggregates" {
 package "SafeRoute.IAM.Domain.Model.Entities" {
   entity "Role" as Role <<Entity>> {
     -id: int
-    -roleTier: RoleTier
+    -tier: RoleTier
     +GetRoleName(): string
     +IsAdmin(): bool
     +IsDriver(): bool
