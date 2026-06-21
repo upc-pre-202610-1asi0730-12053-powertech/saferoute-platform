@@ -1,4 +1,4 @@
-﻿namespace Powertech.Platform.Shared.Domain.Model.ValueObjects;
+namespace Powertech.Platform.Shared.Domain.Model.ValueObjects;
 
 /// <summary>
 ///     Shared value object representing a geographic location (latitude / longitude).

@@ -1,91 +1,90 @@
-using Powertech.Platform.Resources.Errors;
-using Powertech.Platform.Resources.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-// For base ProblemDetailsFactory
-// For ErrorMessages
-// For Shared.Commons
-
-// For StatusCodes
+using Powertech.Platform.Resources.Shared;
+using Powertech.Platform.Resources.Errors;
 
 namespace Powertech.Platform.Shared.Interfaces.Rest.ProblemDetails;
 
 public class ProblemDetailsFactory
 {
-   private readonly Microsoft.AspNetCore.Mvc.Infrastructure.ProblemDetailsFactory
-       _aspNetCoreProblemDetailsFactory; // Corrected type and name
+    private readonly Microsoft.AspNetCore.Mvc.Infrastructure.ProblemDetailsFactory _aspNetCoreProblemDetailsFactory;
+    private readonly IStringLocalizer<CommonMessages> _commonLocalizer;
+    private readonly IStringLocalizer<ErrorMessages> _errorLocalizer;
 
+    public ProblemDetailsFactory(
+        IStringLocalizer<ErrorMessages> errorLocalizer,
+        IStringLocalizer<CommonMessages> commonLocalizer,
+        Microsoft.AspNetCore.Mvc.Infrastructure.ProblemDetailsFactory aspNetCoreProblemDetailsFactory)
+    {
+        _errorLocalizer = errorLocalizer;
+        _commonLocalizer = commonLocalizer;
+        _aspNetCoreProblemDetailsFactory = aspNetCoreProblemDetailsFactory;
+    }
 
-   private readonly IStringLocalizer<CommonMessages> _commonLocalizer; // Corrected to Commons
-   private readonly IStringLocalizer<ErrorMessages> _errorLocalizer;
+    public IActionResult CreateProblemDetails(
+        ControllerBase controller,
+        int statusCode,
+        Enum? errorEnum,
+        string detailMessage)
+    {
+        var title = errorEnum is null
+            ? LocalizeCommon("GenericError", "An error occurred.")
+            : LocalizeError(errorEnum, detailMessage);
+        var detail = errorEnum is null
+            ? detailMessage
+            : LocalizeError(errorEnum, detailMessage);
 
+        var problemDetails = _aspNetCoreProblemDetailsFactory.CreateProblemDetails(
+            controller.HttpContext,
+            statusCode,
+            title,
+            detail: detail,
+            instance: controller.HttpContext.Request.Path
+        );
 
-   public ProblemDetailsFactory(
-       IStringLocalizer<ErrorMessages> errorLocalizer,
-       IStringLocalizer<CommonMessages> commonLocalizer, // Corrected to Commons
-       Microsoft.AspNetCore.Mvc.Infrastructure.ProblemDetailsFactory
-           aspNetCoreProblemDetailsFactory) // Corrected injected type
-   {
-       _errorLocalizer = errorLocalizer;
-       _commonLocalizer = commonLocalizer;
-       _aspNetCoreProblemDetailsFactory = aspNetCoreProblemDetailsFactory; // Corrected assignment
-   }
+        problemDetails.Title = title;
+        problemDetails.Detail = detail;
+        problemDetails.Instance = controller.HttpContext.Request.Path;
 
+        return controller.StatusCode(statusCode, problemDetails);
+    }
 
-   public IActionResult CreateProblemDetails(
-       ControllerBase controller,
-       int statusCode,
-       Enum? errorEnum, // The specific error enum (IamError, ProfilesError, etc.)
-       string detailMessage) // The localized message from the application service
-   {
-       // Leverage the base ProblemDetailsFactory for initial creation
-       var problemDetails = _aspNetCoreProblemDetailsFactory.CreateProblemDetails( // Corrected usage
-           controller.HttpContext,
-           statusCode,
-           errorEnum != null ? _errorLocalizer[$"{errorEnum}"] : _commonLocalizer["GenericError"],
-           detail: detailMessage
-       );
+    public IActionResult CreateProblemDetails(
+        ControllerBase controller,
+        int statusCode,
+        string titleKey,
+        string detailKey,
+        params object[] detailArgs)
+    {
+        var problemDetails = _aspNetCoreProblemDetailsFactory.CreateProblemDetails(
+            controller.HttpContext,
+            statusCode,
+            LocalizeCommon(titleKey, titleKey),
+            detail: LocalizeError(detailKey, detailKey, detailArgs),
+            instance: controller.HttpContext.Request.Path
+        );
+        return controller.StatusCode(statusCode, problemDetails);
+    }
 
+    private string LocalizeError(Enum errorEnum, string fallback)
+    {
+        var typeSpecificKey = $"{errorEnum.GetType().Name}.{errorEnum}";
+        var typeSpecific = _errorLocalizer[typeSpecificKey];
+        if (!typeSpecific.ResourceNotFound)
+            return typeSpecific.Value;
 
-       // Ensure problemDetails is not null (shouldn't be with default factory)
-       if (problemDetails == null)
-       {
-           problemDetails = new Microsoft.AspNetCore.Mvc.ProblemDetails
-           {
-               Status = statusCode,
-               Title = errorEnum != null ? _errorLocalizer[$"{errorEnum}"] : _commonLocalizer["GenericError"],
-               Detail = detailMessage,
-               Instance = controller.HttpContext.Request.Path
-           };
-       }
-       else
-       {
-           problemDetails.Title =
-               errorEnum != null ? _errorLocalizer[$"{errorEnum}"] : _commonLocalizer["GenericError"];
-           problemDetails.Detail = detailMessage;
-           problemDetails.Instance = controller.HttpContext.Request.Path;
-       }
+        return LocalizeError(errorEnum.ToString(), fallback);
+    }
 
+    private string LocalizeError(string key, string fallback, params object[] args)
+    {
+        var localized = args.Length == 0 ? _errorLocalizer[key] : _errorLocalizer[key, args];
+        return localized.ResourceNotFound ? fallback : localized.Value;
+    }
 
-       return controller.StatusCode(statusCode, problemDetails);
-   }
-
-
-   // Overload for when there's no specific error enum, just a generic message
-   public IActionResult CreateProblemDetails(
-       ControllerBase controller,
-       int statusCode,
-       string titleKey, // Key for localized title
-       string detailKey, // Key for localized detail
-       params object[] detailArgs)
-   {
-       var problemDetails = _aspNetCoreProblemDetailsFactory.CreateProblemDetails( // Corrected usage
-           controller.HttpContext,
-           statusCode,
-           _commonLocalizer[titleKey],
-           detail: _errorLocalizer[detailKey, detailArgs],
-           instance: controller.HttpContext.Request.Path
-       );
-       return controller.StatusCode(statusCode, problemDetails);
-   }
+    private string LocalizeCommon(string key, string fallback)
+    {
+        var localized = _commonLocalizer[key];
+        return localized.ResourceNotFound ? fallback : localized.Value;
+    }
 }

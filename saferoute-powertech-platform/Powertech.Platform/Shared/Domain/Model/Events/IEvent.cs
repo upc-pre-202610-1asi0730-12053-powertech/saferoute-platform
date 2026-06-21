@@ -1,6 +1,8 @@
 using Cortex.Mediator.Notifications;
 
+
 namespace Powertech.Platform.Shared.Domain.Model.Events;
+
 
 /// <summary>
 ///     Represents a domain event in the system.
@@ -12,3 +14,5 @@ namespace Powertech.Platform.Shared.Domain.Model.Events;
 public interface IEvent : INotification
 {
 }
+
+///INotification BIBLIOTRCA QUE NOS PERMITE TRABAJAR CON CQRS

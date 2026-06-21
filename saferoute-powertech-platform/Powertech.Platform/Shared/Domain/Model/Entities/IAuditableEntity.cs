@@ -1,5 +1,7 @@
 namespace Powertech.Platform.Shared.Domain.Model.Entities;
 
+///PARA SABER SI UN AGGREGATE PUEDE SER AUDITADO
+
 /// <summary>
 ///     Marks an entity as carrying audit timestamps managed by the persistence layer.
 /// </summary>
@@ -14,6 +16,7 @@ public interface IAuditableEntity
     ///     Gets or sets the UTC timestamp when the entity was first persisted.
     /// </summary>
     DateTimeOffset? CreatedAt { get; set; }
+
 
     /// <summary>
     ///     Gets or sets the UTC timestamp when the entity was last saved.

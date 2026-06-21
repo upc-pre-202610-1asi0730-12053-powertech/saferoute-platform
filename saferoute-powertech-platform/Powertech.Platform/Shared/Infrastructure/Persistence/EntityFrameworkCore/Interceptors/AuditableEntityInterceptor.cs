@@ -2,7 +2,11 @@ using Powertech.Platform.Shared.Domain.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
+
 namespace Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
+
+// PARA MANEJAR DATOS DE AUDITORIA, PARA ANADIR EL CREATED AT EMPLEANDO LA HORA MUNDIAL (UTC)
+// ESTO PARA NO ANADIRLO EN EL HANDLER, PQ SE CREA AUTOMATICO NO SE PIDE Q SE INGRESE
 
 /// <summary>
 ///     EF Core interceptor that automatically populates audit timestamps on any entity
@@ -22,33 +26,37 @@ namespace Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCo
 /// </remarks>
 public sealed class AuditableEntityInterceptor : SaveChangesInterceptor
 {
-    /// <inheritdoc />
-    public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
-    {
-        ApplyAuditTimestamps(eventData.Context);
-        return base.SavingChanges(eventData, result);
-    }
+   /// <inheritdoc />
+   public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+   {
+       ApplyAuditTimestamps(eventData.Context);
+       return base.SavingChanges(eventData, result);
+   }
 
-    /// <inheritdoc />
-    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
-        DbContextEventData eventData,
-        InterceptionResult<int> result,
-        CancellationToken cancellationToken = default)
-    {
-        ApplyAuditTimestamps(eventData.Context);
-        return base.SavingChangesAsync(eventData, result, cancellationToken);
-    }
 
-    private static void ApplyAuditTimestamps(DbContext? context)
-    {
-        if (context is null) return;
+   /// <inheritdoc />
+   public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
+       DbContextEventData eventData,
+       InterceptionResult<int> result,
+       CancellationToken cancellationToken = default)
+   {
+       ApplyAuditTimestamps(eventData.Context);
+       return base.SavingChangesAsync(eventData, result, cancellationToken);
+   }
 
-        var now = DateTimeOffset.UtcNow;
 
-        foreach (var entry in context.ChangeTracker.Entries<IAuditableEntity>())
-        {
-            if (entry.State is EntityState.Added or EntityState.Modified) entry.Entity.UpdatedAt = now;
-            if (entry.State == EntityState.Added) entry.Entity.CreatedAt ??= now;
-        }
-    }
+   private static void ApplyAuditTimestamps(DbContext? context)
+   {
+       if (context is null) return;
+
+
+       var now = DateTimeOffset.UtcNow;
+
+
+       foreach (var entry in context.ChangeTracker.Entries<IAuditableEntity>())
+       {
+           if (entry.State is EntityState.Added or EntityState.Modified) entry.Entity.UpdatedAt = now;
+           if (entry.State == EntityState.Added) entry.Entity.CreatedAt ??= now;
+       }
+   }
 }

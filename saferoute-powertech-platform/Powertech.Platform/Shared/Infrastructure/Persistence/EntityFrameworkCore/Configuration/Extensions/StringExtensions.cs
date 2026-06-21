@@ -1,6 +1,9 @@
 using Humanizer;
 
+// CONVERTIR Y PLURALIZAR 
+
 namespace Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+
 
 /// <summary>
 ///     String extensions for the database context
@@ -20,11 +23,14 @@ public static class StringExtensions
     {
         return new string(Convert(text.GetEnumerator()).ToArray());
 
+
         static IEnumerable<char> Convert(CharEnumerator e)
         {
             if (!e.MoveNext()) yield break;
 
+
             yield return char.ToLower(e.Current);
+
 
             while (e.MoveNext())
                 if (char.IsUpper(e.Current))
@@ -38,6 +44,7 @@ public static class StringExtensions
                 }
         }
     }
+
 
     /// <summary>
     ///     Convert the string to plural

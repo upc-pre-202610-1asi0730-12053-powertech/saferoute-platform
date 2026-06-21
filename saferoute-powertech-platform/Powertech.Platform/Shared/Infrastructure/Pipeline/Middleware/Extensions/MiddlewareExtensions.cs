@@ -1,6 +1,8 @@
 using Powertech.Platform.Shared.Infrastructure.Pipeline.Middleware.Components;
 
+
 namespace Powertech.Platform.Shared.Infrastructure.Pipeline.Middleware.Extensions;
+
 
 /// <summary>
 ///     Middleware extensions

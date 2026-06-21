@@ -1,4 +1,6 @@
 namespace Powertech.Platform.Shared.Domain.Repositories;
+/// VA EN DOMINIO PORQUE SE ESTA APLICANDO EL PATTERN SEPARATED INTERFACE
+///Y LA IMPLEMENTACION DE ESTA EN LA CAPA DE INFRAESTRUCTURA
 
 /// <summary>
 ///     Unit of work interface for all repositories
