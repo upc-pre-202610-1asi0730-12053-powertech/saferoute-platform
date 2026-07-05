@@ -22,12 +22,28 @@ public static class RouteResourceFromEntityAssembler
             entity.OrganizationId.ToString(),
             entity.Name,
             entity.State.Value,
-            entity.Assignment is null ? null : ToAssignmentResource(entity.Assignment));
+            entity.DepartureTime?.ToString(),
+            entity.ServiceDays?.GetDays().ToList() ?? [],
+            entity.Vehicle is null ? null : ToVehicleResource(entity.Vehicle),
+            entity.Assignment is null ? null : ToAssignmentResource(entity.Assignment),
+            entity.GetStopSequence().Select(ToStopResource).ToList());
     }
+
+    /// <summary>Converts a <see cref="Vehicle" /> entity into its resource.</summary>
+    private static VehicleResource ToVehicleResource(Vehicle vehicle) =>
+        new(vehicle.Id.ToString(), vehicle.Plate, vehicle.Model, vehicle.Brand, vehicle.Capacity);
 
     /// <summary>Converts an <see cref="Assignment" /> entity into its resource.</summary>
     private static AssignmentResource ToAssignmentResource(Assignment assignment) =>
         new(assignment.Id.ToString(),
             assignment.DriverId.ToString(),
             assignment.Children.Select(child => child.ToString()).ToList());
+
+    /// <summary>Converts a <see cref="Stop" /> entity into its resource.</summary>
+    private static StopResource ToStopResource(Stop stop) =>
+        new(stop.Id.ToString(),
+            stop.Name,
+            stop.Coordinates.Latitude,
+            stop.Coordinates.Longitude,
+            stop.Order.Position);
 }

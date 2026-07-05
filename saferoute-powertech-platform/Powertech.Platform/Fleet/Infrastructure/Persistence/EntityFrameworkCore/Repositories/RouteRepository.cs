@@ -20,9 +20,16 @@ public class RouteRepository(AppDbContext context)
     : BaseRepository<Route>(context), IRouteRepository
 {
     /// <inheritdoc />
+    public override async Task<IEnumerable<Route>> ListAsync(CancellationToken cancellationToken = default)
+    {
+        return await RoutesWithConfiguration()
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
     public async Task<Route?> FindByRouteIdAsync(RouteId routeId, CancellationToken cancellationToken)
     {
-        return await Context.Set<Route>()
+        return await RoutesWithConfiguration()
             .FirstOrDefaultAsync(route => route.Id == routeId, cancellationToken);
     }
 
@@ -30,8 +37,15 @@ public class RouteRepository(AppDbContext context)
     public async Task<IEnumerable<Route>> FindByOrganizationIdAsync(OrganizationId organizationId,
         CancellationToken cancellationToken)
     {
-        return await Context.Set<Route>()
+        return await RoutesWithConfiguration()
             .Where(route => route.OrganizationId == organizationId)
             .ToListAsync(cancellationToken);
     }
+
+    private IQueryable<Route> RoutesWithConfiguration() =>
+        Context.Set<Route>()
+            .Include(route => route.Stops)
+            .Include(route => route.Vehicle)
+            .Include(route => route.Assignment)
+            .AsSplitQuery();
 }

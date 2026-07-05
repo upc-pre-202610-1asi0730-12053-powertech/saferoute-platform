@@ -206,6 +206,23 @@ public class Route
         State = new RouteState(RouteState.Inactive);
     }
 
+    public void ReplaceConfiguration(string name, RouteState state, DepartureTime? departureTime,
+        ServiceDays serviceDays, IEnumerable<Stop> stops, Vehicle? vehicle, Assignment? assignment)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Route name cannot be empty.", nameof(name));
+
+        Name = name.Trim();
+        State = state;
+        DepartureTime = departureTime;
+        ServiceDays = serviceDays;
+        Vehicle = vehicle;
+        Assignment = assignment;
+
+        _stops.Clear();
+        _stops.AddRange(stops.OrderBy(stop => stop.Order.Position));
+    }
+
     /// <summary>Returns the ordered stop sequence.</summary>
     public IReadOnlyList<Stop> GetStopSequence() =>
         _stops.OrderBy(s => s.Order.Position).ToList();

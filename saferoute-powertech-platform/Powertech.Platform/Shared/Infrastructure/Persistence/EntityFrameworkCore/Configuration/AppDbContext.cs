@@ -1,9 +1,9 @@
 using Powertech.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
+using Microsoft.EntityFrameworkCore;
 using Powertech.Platform.Trip.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Powertech.Platform.Fleet.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Powertech.Platform.Notifications.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Powertech.Platform.Stakeholder.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Powertech.Platform.Subscription.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
