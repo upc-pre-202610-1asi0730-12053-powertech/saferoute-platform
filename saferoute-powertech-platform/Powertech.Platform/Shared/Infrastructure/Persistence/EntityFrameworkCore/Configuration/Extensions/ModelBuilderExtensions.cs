@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Entities;
 
-// MAPEAR LOS AGREGADOS A LA BASE DE DATOS
-
 namespace Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
 

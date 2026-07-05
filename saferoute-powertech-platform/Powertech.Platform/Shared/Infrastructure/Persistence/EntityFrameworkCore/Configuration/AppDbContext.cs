@@ -49,6 +49,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.ApplyFleetConfiguration();
         builder.ApplySubscriptionConfiguration();
         builder.ApplyNotificationConfiguration();
+        builder.ApplySharedConfiguration();
 
         // General Naming Convention for the database objects
         builder.UseSnakeCaseNamingConvention();
