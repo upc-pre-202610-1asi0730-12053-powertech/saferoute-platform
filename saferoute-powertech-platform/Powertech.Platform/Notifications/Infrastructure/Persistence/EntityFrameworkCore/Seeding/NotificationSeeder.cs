@@ -10,16 +10,15 @@ using TripAggregate = Powertech.Platform.Trip.Domain.Model.Aggregates.Trip;
 namespace Powertech.Platform.Notifications.Infrastructure.Persistence.EntityFrameworkCore.Seeding;
 
 /// <summary>
-///     Seeds the Notifications bounded context with a couple of delivered demo notifications
-///     addressed to the seeded parent, referencing the seeded trip.
+///     Seeds the Notifications bounded context with demo notifications and one route announcement.
 /// </summary>
 public static class NotificationSeeder
 {
+    private const string WelcomeAnnouncement =
+        "Bienvenido a SafeRoute: recuerde mantener actualizados los datos de sus hijos.";
+
     public static async Task SeedAsync(AppDbContext context, CancellationToken cancellationToken = default)
     {
-        if (await context.Set<Notification>().AnyAsync(cancellationToken)) return;
-
-        // The parent linked to the seeded parent@saferoute.pe IAM account.
         var seededParentEmail = new Email("parent@saferoute.pe");
         var parent = await context.Set<Parent>().Where(p => p.Email == seededParentEmail)
             .FirstOrDefaultAsync(cancellationToken);
@@ -27,19 +26,34 @@ public static class NotificationSeeder
         if (parent is null || trip is null) return;
 
         var organizationId = IamSeeder.SeedOrganizationId;
+        var notifications = await context.Set<Notification>()
+            .Include(notification => notification.Announcements)
+            .ToListAsync(cancellationToken);
 
-        var tripStarted = new Notification(new CreateNotificationCommand(organizationId,
-            parent.Id.Identifier, trip.Id.Identifier, "TRIP_STARTED",
-            "El bus inició la Ruta San Martín — Turno Mañana."));
-        tripStarted.Dispatch();
-        tripStarted.MarkDelivered();
-        context.Add(tripStarted);
+        if (notifications.Count == 0)
+        {
+            var tripStarted = new Notification(new CreateNotificationCommand(organizationId,
+                parent.Id.Identifier, trip.Id.Identifier, "TRIP_STARTED",
+                "El bus inicio la Ruta San Martin - Turno Manana."));
+            tripStarted.Dispatch();
+            tripStarted.MarkDelivered();
+            context.Add(tripStarted);
+        }
 
-        var announcement = new Notification(new CreateNotificationCommand(organizationId,
-            parent.Id.Identifier, trip.Id.Identifier, "ANNOUNCEMENT",
-            "Bienvenido a SafeRoute: recuerde mantener actualizados los datos de sus hijos."));
-        announcement.Dispatch();
-        context.Add(announcement);
+        var announcement = notifications.FirstOrDefault(notification =>
+            notification.Category.Value == "ANNOUNCEMENT" &&
+            notification.TripId.Identifier == trip.Id.Identifier);
+
+        if (announcement is null)
+        {
+            announcement = new Notification(new CreateNotificationCommand(organizationId,
+                parent.Id.Identifier, trip.Id.Identifier, "ANNOUNCEMENT", WelcomeAnnouncement));
+            announcement.Dispatch();
+            context.Add(announcement);
+        }
+
+        if (announcement.Announcements.All(current => current.RouteId.Identifier != trip.RouteId.Identifier))
+            announcement.AddAnnouncement(trip.RouteId.Identifier, WelcomeAnnouncement);
 
         await context.SaveChangesAsync(cancellationToken);
     }

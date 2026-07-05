@@ -836,6 +836,13 @@ namespace Powertech.Platform.Migrations
 
             modelBuilder.Entity("Powertech.Platform.Trip.Domain.Model.Aggregates.Trip", b =>
                 {
+                    b.HasOne("Powertech.Platform.Fleet.Domain.Model.Aggregates.Route", null)
+                        .WithMany()
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("f_k_trips_routes_route_id");
+
                     b.OwnsMany("Powertech.Platform.Trip.Domain.Model.Entities.Attendance", "Attendances", b1 =>
                         {
                             b1.Property<Guid>("Id")

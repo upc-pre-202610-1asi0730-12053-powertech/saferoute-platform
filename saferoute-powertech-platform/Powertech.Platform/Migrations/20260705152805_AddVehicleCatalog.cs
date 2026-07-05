@@ -1,4 +1,3 @@
-using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,29 +10,23 @@ namespace Powertech.Platform.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "vehicles",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    organization_id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    plate = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
-                    model = table.Column<string>(type: "varchar(80)", maxLength: 80, nullable: false),
-                    capacity = table.Column<int>(type: "int", nullable: false),
-                    status = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("p_k_vehicles", x => x.id);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
+            migrationBuilder.Sql("""
+                CREATE TABLE IF NOT EXISTS `vehicles` (
+                    `id` char(36) NOT NULL,
+                    `organization_id` char(36) NOT NULL,
+                    `plate` varchar(20) NOT NULL,
+                    `model` varchar(80) NOT NULL,
+                    `capacity` int NOT NULL,
+                    `status` varchar(20) NOT NULL,
+                    PRIMARY KEY (`id`)
+                ) CHARACTER SET utf8mb4;
+                """);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "vehicles");
+            migrationBuilder.Sql("DROP TABLE IF EXISTS `vehicles`;");
         }
     }
 }
