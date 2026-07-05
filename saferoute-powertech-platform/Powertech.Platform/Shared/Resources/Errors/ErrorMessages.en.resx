@@ -12,8 +12,17 @@
     <data name="IamError.UsernameAlreadyTaken" xml:space="preserve">
    <value>Username {0} is already taken.</value>
  </data>
+    <data name="IamError.EmailAlreadyRegistered" xml:space="preserve">
+   <value>Email address {0} is already registered.</value>
+ </data>
     <data name="IamError.InvalidCredentials" xml:space="preserve">
-   <value>Invalid username or password.</value>
+   <value>Invalid email or password.</value>
+ </data>
+    <data name="IamError.OrganizationNotFound" xml:space="preserve">
+   <value>Organization not found.</value>
+ </data>
+    <data name="IamError.InvalidIamData" xml:space="preserve">
+   <value>Invalid data provided.</value>
  </data>
     <data name="IamError.OperationCancelled" xml:space="preserve">
    <value>User operation was cancelled.</value>

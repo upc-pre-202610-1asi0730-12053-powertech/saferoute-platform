@@ -1,4 +1,4 @@
-﻿namespace Powertech.Platform.Iam.Infrastructure.Tokens.Jwt.Configuration;
+namespace Powertech.Platform.Iam.Infrastructure.Tokens.Jwt.Configuration;
 
 public class TokenSettings
 {

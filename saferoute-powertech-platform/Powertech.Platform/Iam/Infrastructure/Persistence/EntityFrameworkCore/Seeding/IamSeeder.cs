@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Powertech.Platform.Iam.Application.Internal.OutboundServices;
 using Powertech.Platform.Iam.Domain.Model.Aggregates;
+using Powertech.Platform.Iam.Domain.Model.ValueObjects;
 using Powertech.Platform.Shared.Domain.Model.ValueObjects;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
-using Powertech.Platform.Stakeholder.Domain.Model.ValueObjects;
 
-namespace Powertech.Platform.Iam.Infrastructure.Persistence.Seeding;
+namespace Powertech.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Seeding;
 
 /// <summary>
 ///     Seeds the Iam bounded context with the initial organization and demo user accounts.

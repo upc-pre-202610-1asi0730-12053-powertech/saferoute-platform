@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Powertech.Platform.Iam.Domain.Model.Aggregates;
 using Powertech.Platform.Iam.Domain.Repositories;
 using Powertech.Platform.Shared.Domain.Model.ValueObjects;

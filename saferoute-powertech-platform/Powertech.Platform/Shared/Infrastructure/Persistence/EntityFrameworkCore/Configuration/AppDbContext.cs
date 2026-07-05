@@ -1,3 +1,4 @@
+using Powertech.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
 using Powertech.Platform.Trip.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
@@ -42,6 +43,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         base.OnModelCreating(builder);
 
         // Per-bounded-context model configuration (declared in each context's Infrastructure layer).
+        builder.ApplyIamConfiguration();
         builder.ApplyStakeholderConfiguration();
         builder.ApplyTripConfiguration();
         builder.ApplyFleetConfiguration();

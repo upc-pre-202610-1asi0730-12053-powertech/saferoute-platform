@@ -59,6 +59,59 @@ public static class ModelBuilderExtensions
                 .HasConversion(state => state.Value, value => new RouteState(value))
                 .IsRequired();
 
+            // Optional schedule value objects, persisted as their canonical string forms.
+            route.Property(r => r.DepartureTime)
+                .HasConversion(time => time == null ? null : time.ToString(),
+                    value => value == null ? null : new DepartureTime(value));
+
+            route.Property(r => r.ServiceDays)
+                .HasConversion(days => days == null ? null : days.Value,
+                    value => value == null ? null : new ServiceDays(value));
+
+            // Owned collection in its own table: the ordered stop sequence.
+            route.OwnsMany(r => r.Stops, stop =>
+            {
+                stop.ToTable("RouteStops");
+                stop.WithOwner().HasForeignKey("RouteId");
+
+                stop.Property(s => s.Id)
+                    .HasConversion(id => id.Identifier, value => new StopId(value))
+                    .ValueGeneratedNever();
+                stop.HasKey(s => s.Id);
+
+                stop.Property(s => s.Name).IsRequired().HasMaxLength(120);
+
+                stop.Property(s => s.Order)
+                    .HasConversion(order => order.Position, value => new StopOrder(value))
+                    .IsRequired();
+
+                stop.OwnsOne(s => s.Coordinates, coordinates =>
+                {
+                    coordinates.WithOwner().HasForeignKey("Id");
+                    coordinates.Property(c => c.Latitude).HasColumnName("latitude").IsRequired();
+                    coordinates.Property(c => c.Longitude).HasColumnName("longitude").IsRequired();
+                });
+            });
+
+            // Optional owned single in its own table: the vehicle operating the route.
+            route.OwnsOne(r => r.Vehicle, vehicle =>
+            {
+                vehicle.ToTable("RouteVehicle");
+                vehicle.WithOwner().HasForeignKey("RouteId");
+
+                vehicle.Property(v => v.Id)
+                    .HasConversion(id => id.Identifier, value => new VehicleId(value))
+                    .ValueGeneratedNever();
+                vehicle.HasKey(v => v.Id);
+
+                vehicle.Property(v => v.OrganizationId)
+                    .HasConversion(id => id.Identifier, value => new OrganizationId(value));
+
+                vehicle.Property(v => v.Plate).IsRequired().HasMaxLength(20);
+                vehicle.Property(v => v.Model).IsRequired().HasMaxLength(80);
+                vehicle.Property(v => v.Brand).IsRequired().HasMaxLength(80);
+                vehicle.Property(v => v.Capacity).IsRequired();
+            });
 
             // Optional owned single in its own table: the driver/children assignment. Like the
             // vehicle, it owns its identity (AssignmentId) and therefore lives in its own

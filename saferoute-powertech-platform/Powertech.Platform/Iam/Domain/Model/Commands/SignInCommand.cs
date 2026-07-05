@@ -1,3 +1,3 @@
-﻿namespace Powertech.Platform.Iam.Domain.Model.Commands;
+namespace Powertech.Platform.Iam.Domain.Model.Commands;
 
 public record SignInCommand(string Email, string Password);

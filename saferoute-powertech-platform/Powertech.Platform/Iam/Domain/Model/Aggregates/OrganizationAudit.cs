@@ -1,4 +1,4 @@
-﻿using Powertech.Platform.Shared.Domain.Model.Entities;
+using Powertech.Platform.Shared.Domain.Model.Entities;
 
 namespace Powertech.Platform.Iam.Domain.Model.Aggregates;
 

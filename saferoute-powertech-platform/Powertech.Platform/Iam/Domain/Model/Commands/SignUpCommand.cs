@@ -1,4 +1,4 @@
-﻿namespace Powertech.Platform.Iam.Domain.Model.Commands;
+namespace Powertech.Platform.Iam.Domain.Model.Commands;
 
 public record SignUpCommand(
     string FirstName,

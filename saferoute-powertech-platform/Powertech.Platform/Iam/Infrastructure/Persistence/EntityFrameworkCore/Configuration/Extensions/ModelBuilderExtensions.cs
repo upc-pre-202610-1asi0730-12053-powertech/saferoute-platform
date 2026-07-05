@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Powertech.Platform.Iam.Domain.Model.Aggregates;
+using Powertech.Platform.Iam.Domain.Model.ValueObjects;
 using Powertech.Platform.Shared.Domain.Model.ValueObjects;
-using Powertech.Platform.Stakeholder.Domain.Model.ValueObjects;
 
 namespace Powertech.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 

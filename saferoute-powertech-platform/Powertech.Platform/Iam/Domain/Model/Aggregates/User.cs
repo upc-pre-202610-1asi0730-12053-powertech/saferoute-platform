@@ -1,4 +1,4 @@
-﻿using Powertech.Platform.Iam.Domain.Model.ValueObjects;
+using Powertech.Platform.Iam.Domain.Model.ValueObjects;
 using Powertech.Platform.Shared.Domain.Model.ValueObjects;
 
 namespace Powertech.Platform.Iam.Domain.Model.Aggregates;

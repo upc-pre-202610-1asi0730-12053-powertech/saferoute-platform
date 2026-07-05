@@ -1,4 +1,4 @@
-﻿using Powertech.Platform.Iam.Application.Internal.OutboundServices;
+using Powertech.Platform.Iam.Application.Internal.OutboundServices;
 using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace Powertech.Platform.Iam.Infrastructure.Hashing.BCrypt.Services;

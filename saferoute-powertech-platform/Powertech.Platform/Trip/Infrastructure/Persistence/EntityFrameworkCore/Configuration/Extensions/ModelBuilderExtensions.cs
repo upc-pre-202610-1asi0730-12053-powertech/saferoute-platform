@@ -2,6 +2,7 @@
 using Powertech.Platform.Shared.Domain.Model.ValueObjects;
 using Powertech.Platform.Trip.Domain.Model.ValueObjects;
 using TripAggregate = Powertech.Platform.Trip.Domain.Model.Aggregates.Trip;
+using RouteAggregate = Powertech.Platform.Fleet.Domain.Model.Aggregates.Route;
 
 namespace Powertech.Platform.Trip.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
@@ -61,7 +62,7 @@ public static class ModelBuilderExtensions
             
             // Cross-context foreign keys (DB-level integrity only; no navigation, no cascade).
             // Connects Trip → Fleet (route) and Trip → Stakeholder (driver).
-            trip.HasOne<Route>().WithMany().HasForeignKey(t => t.RouteId)
+            trip.HasOne<RouteAggregate>().WithMany().HasForeignKey(t => t.RouteId)
                 .OnDelete(DeleteBehavior.Restrict);
             
             // Owned collection: boarding attendances.

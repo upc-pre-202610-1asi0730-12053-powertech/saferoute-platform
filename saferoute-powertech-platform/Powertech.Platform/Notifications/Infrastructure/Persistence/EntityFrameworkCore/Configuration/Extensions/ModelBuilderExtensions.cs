@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Powertech.Platform.Notifications.Domain.Model.Aggregates;
+using Powertech.Platform.Notifications.Domain.Model.ValueObjects;
 
 namespace Powertech.Platform.Notifications.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
@@ -7,52 +8,61 @@ public static class ModelBuilderExtensions
 {
     public static void ApplyNotificationConfiguration(this ModelBuilder builder)
     {
-        builder.Entity<Notification>().HasKey(n => n.Id);
-        
-        builder.Entity<Notification>().OwnsOne(n => n.Id,
-            ni => { ni.Property(n => n.Identifier).HasColumnName("Id").IsRequired(); });
-            
-        builder.Entity<Notification>().OwnsOne(n => n.OrganizationId,
-            ni => { ni.Property(n => n.Identifier).HasColumnName("OrganizationId").IsRequired(); });
-            
-        builder.Entity<Notification>().OwnsOne(n => n.ParentId,
-            ni => { ni.Property(n => n.Identifier).HasColumnName("ParentId").IsRequired(); });
-            
-        builder.Entity<Notification>().OwnsOne(n => n.TripId,
-            ni => { ni.Property(n => n.Identifier).HasColumnName("TripId").IsRequired(); });
-            
-        builder.Entity<Notification>().OwnsOne(n => n.Category,
-            ni => { ni.Property(n => n.Value).HasColumnName("Category").HasMaxLength(50).IsRequired(); });
-            
-        builder.Entity<Notification>().OwnsOne(n => n.DeliveryState,
-            ni => { ni.Property(n => n.Value).HasColumnName("DeliveryState").HasMaxLength(20).IsRequired(); });
-            
-        builder.Entity<Notification>().OwnsOne(n => n.Message,
-            ni => { ni.Property(n => n.Content).HasColumnName("Message").HasMaxLength(1000).IsRequired(); });
-            
-        builder.Entity<Notification>().Property(n => n.SentAt).IsRequired();
-
-        // Alerts Collection
-        builder.Entity<Notification>().OwnsMany(n => n.Alerts, a =>
+        builder.Entity<Notification>(notification =>
         {
-            a.WithOwner().HasForeignKey("NotificationId");
-            a.HasKey("Id");
-            a.Property(al => al.Id).ValueGeneratedOnAdd();
-            a.Property(al => al.TriggeredAt).IsRequired();
-            a.Property(al => al.Panic).IsRequired();
-        });
+            notification.ToTable("Notifications");
+            notification.HasKey(n => n.Id);
+            notification.Property(n => n.Id)
+                .HasConversion(id => id.Identifier, value => new NotificationId(value))
+                .ValueGeneratedNever();
+            notification.Property(n => n.OrganizationId)
+                .HasConversion(id => id.Identifier, value => new NotificationId(value));
+            notification.Property(n => n.ParentId)
+                .HasConversion(id => id.Identifier, value => new NotificationId(value));
+            notification.Property(n => n.TripId)
+                .HasConversion(id => id.Identifier, value => new NotificationId(value));
+            notification.Property(n => n.Category)
+                .HasConversion(category => category.Value, value => new NotificationCategory(value))
+                .HasMaxLength(50).IsRequired();
+            notification.Property(n => n.DeliveryState)
+                .HasConversion(state => state.Value, value => new NotificationDeliveryState(value))
+                .HasMaxLength(20).IsRequired();
+            notification.Property(n => n.Message)
+                .HasConversion(message => message.Content, value => new NotificationMessage(value))
+                .HasMaxLength(1000).IsRequired();
+            notification.Property(n => n.SentAt).IsRequired();
 
-        // Announcements Collection
-        builder.Entity<Notification>().OwnsMany(n => n.Announcements, an =>
-        {
-            an.WithOwner().HasForeignKey("NotificationId");
-            an.HasKey("Id");
-            an.Property(ann => ann.Id).ValueGeneratedOnAdd();
-            an.Property(ann => ann.PublishedAt).IsRequired();
-            an.OwnsOne(ann => ann.RouteId, 
-                ri => { ri.Property(r => r.Identifier).HasColumnName("RouteId").IsRequired(); });
-            an.OwnsOne(ann => ann.Message, 
-                mi => { mi.Property(m => m.Content).HasColumnName("Message").HasMaxLength(1000).IsRequired(); });
+            // Alerts Collection
+            notification.OwnsMany(n => n.Alerts, alert =>
+            {
+                alert.WithOwner().HasForeignKey("OwnerNotificationId");
+                alert.HasKey(a => a.Id);
+                alert.Property(a => a.Id)
+                    .HasConversion(id => id.Identifier, value => new AlertId(value))
+                    .ValueGeneratedNever();
+                alert.Property(a => a.NotificationId)
+                    .HasConversion(id => id.Identifier, value => new NotificationId(value));
+                alert.Property(a => a.TriggeredAt).IsRequired();
+                alert.Property(a => a.Panic).IsRequired();
+            });
+
+            // Announcements Collection
+            notification.OwnsMany(n => n.Announcements, announcement =>
+            {
+                announcement.WithOwner().HasForeignKey("OwnerNotificationId");
+                announcement.HasKey(a => a.Id);
+                announcement.Property(a => a.Id)
+                    .HasConversion(id => id.Identifier, value => new AnnouncementId(value))
+                    .ValueGeneratedNever();
+                announcement.Property(a => a.NotificationId)
+                    .HasConversion(id => id.Identifier, value => new NotificationId(value));
+                announcement.Property(a => a.RouteId)
+                    .HasConversion(id => id.Identifier, value => new NotificationId(value));
+                announcement.Property(a => a.Message)
+                    .HasConversion(message => message.Content, value => new NotificationMessage(value))
+                    .HasMaxLength(1000).IsRequired();
+                announcement.Property(a => a.PublishedAt).IsRequired();
+            });
         });
     }
 }
