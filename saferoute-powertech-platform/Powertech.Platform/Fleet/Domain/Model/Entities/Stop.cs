@@ -33,6 +33,12 @@ public class Stop
         Order = order;
     }
 
+    internal Stop(StopId id, string name, Coordinates coordinates, StopOrder order)
+        : this(name, coordinates, order)
+    {
+        Id = id;
+    }
+
     /// <summary>Local identity of the stop within the aggregate.</summary>
     public StopId Id { get; private set; }
 

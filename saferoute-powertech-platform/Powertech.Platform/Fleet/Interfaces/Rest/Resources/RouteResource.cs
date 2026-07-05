@@ -15,10 +15,16 @@
 /// <param name="State">The lifecycle state (DRAFT, ACTIVE, INACTIVE).</param>
 /// <param name="DepartureTime">The departure time in HH:mm, when set.</param>
 /// <param name="ServiceDays">The configured service days, when set.</param>
+/// <param name="Vehicle">The vehicle assigned to the route, when set.</param>
 /// <param name="Assignment">The driver/children assignment, when set.</param>
+/// <param name="Stops">The ordered stop sequence.</param>
 public record RouteResource(
     string Id,
     string OrganizationId,
     string Name,
     string State,
-    AssignmentResource? Assignment);
+    string? DepartureTime,
+    IReadOnlyList<string> ServiceDays,
+    VehicleResource? Vehicle,
+    AssignmentResource? Assignment,
+    IReadOnlyList<StopResource> Stops);

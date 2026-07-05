@@ -42,6 +42,12 @@ public class Vehicle
         Capacity = capacity;
     }
 
+    internal Vehicle(VehicleId id, OrganizationId organizationId, string plate, string model, string brand, int capacity)
+        : this(organizationId, plate, model, brand, capacity)
+    {
+        Id = id;
+    }
+
     /// <summary>Local identity of the vehicle.</summary>
     public VehicleId Id { get; private set; }
 

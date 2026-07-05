@@ -37,6 +37,13 @@ public class Assignment
         ChildIds = [];
     }
 
+    internal Assignment(AssignmentId id, DriverId driverId, IEnumerable<ChildId> children)
+        : this(driverId)
+    {
+        Id = id;
+        ChildIds = children.Select(child => child.Identifier).Distinct().ToList();
+    }
+
     /// <summary>Local identity of the assignment.</summary>
     public AssignmentId Id { get; private set; }
 

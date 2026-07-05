@@ -51,7 +51,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     }
 
     // inheritedDoc
-    public async Task<IEnumerable<TEntity>> ListAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> ListAsync(CancellationToken cancellationToken = default)
     {
         return await Context.Set<TEntity>().ToListAsync(cancellationToken);
     }

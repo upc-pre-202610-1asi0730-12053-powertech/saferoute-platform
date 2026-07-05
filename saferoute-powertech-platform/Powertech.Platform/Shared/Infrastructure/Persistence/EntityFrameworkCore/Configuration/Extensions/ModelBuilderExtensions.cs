@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Entities;
 
 namespace Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
@@ -7,6 +8,21 @@ namespace Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCo
 /// </summary>
 public static class ModelBuilderExtensions
 {
+    public static void ApplySharedConfiguration(this ModelBuilder builder)
+    {
+        builder.Entity<VehicleCatalogItem>(vehicle =>
+        {
+            vehicle.ToTable("Vehicle");
+            vehicle.HasKey(v => v.Id);
+            vehicle.Property(v => v.Id).ValueGeneratedNever();
+            vehicle.Property(v => v.OrganizationId).IsRequired();
+            vehicle.Property(v => v.Plate).IsRequired().HasMaxLength(20);
+            vehicle.Property(v => v.Model).IsRequired().HasMaxLength(80);
+            vehicle.Property(v => v.Capacity).IsRequired();
+            vehicle.Property(v => v.Status).IsRequired().HasMaxLength(20);
+        });
+    }
+
     /// <summary>
     ///     Use snake case naming convention for the database context
     /// </summary>

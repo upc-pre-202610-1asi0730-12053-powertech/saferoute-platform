@@ -40,6 +40,13 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         // Per-bounded-context model configuration (declared in each context's Infrastructure layer).
         builder.ApplyTripConfiguration();
+<<<<<<< Updated upstream
+=======
+        builder.ApplyFleetConfiguration();
+        builder.ApplySubscriptionConfiguration();
+        builder.ApplyNotificationConfiguration();
+        builder.ApplySharedConfiguration();
+>>>>>>> Stashed changes
 
         // General Naming Convention for the database objects
         builder.UseSnakeCaseNamingConvention();

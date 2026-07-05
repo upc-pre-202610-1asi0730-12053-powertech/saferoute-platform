@@ -1,9 +1,9 @@
 ﻿namespace Powertech.Platform.Fleet.Domain.Model.Commands;
 
 /// <summary>
-///     Command to select and assign a vehicle to a route.
+///     Command to choose and assign a vehicle to a route.
 /// </summary>
-/// <remarks>Maps to the "Select Vehicle" event-storming command, producing a <c>VehicleAssignedToRoute</c> event.</remarks>
+/// <remarks>Maps to the "Choose Vehicle" event-storming command, producing a <c>VehicleAssignedToRoute</c> event.</remarks>
 /// <param name="RouteId">The route to assign the vehicle to.</param>
 /// <param name="Plate">The vehicle license plate.</param>
 /// <param name="Model">The vehicle model.</param>
