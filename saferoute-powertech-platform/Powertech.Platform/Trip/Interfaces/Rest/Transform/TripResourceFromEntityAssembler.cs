@@ -25,7 +25,8 @@ public static class TripResourceFromEntityAssembler
             entity.State.Value,
             entity.StartTime,
             entity.EndTime,
-            entity.Attendances.Select(ToAttendanceResource).ToList());
+            entity.Attendances.Select(ToAttendanceResource).ToList(),
+            entity.Incidents.Select(ToIncidentResource).ToList());
     }
     
     /// <summary>Converts an <see cref="Attendance" /> entity into its resource.</summary>
@@ -34,4 +35,10 @@ public static class TripResourceFromEntityAssembler
             attendance.ChildId.ToString(),
             attendance.BoardingState.Value,
             attendance.BoardedAt);
+
+    /// <summary>Converts an <see cref="Incident" /> entity into its resource.</summary>
+    private static IncidentResource ToIncidentResource(Incident incident) =>
+        new(incident.Id.ToString(),
+            incident.Description.Value,
+            incident.ReportedAt);
 }

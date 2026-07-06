@@ -24,4 +24,5 @@ public record TripResource(
     string TripState,
     DateTimeOffset? StartTime,
     DateTimeOffset? EndTime,
-    IReadOnlyList<AttendanceResource> Attendances);
+    IReadOnlyList<AttendanceResource> Attendances,
+    IReadOnlyList<IncidentResource> Incidents);
