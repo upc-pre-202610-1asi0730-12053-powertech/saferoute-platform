@@ -1,0 +1,300 @@
+@startuml
+skinparam monochrome false
+left to right direction
+
+    package "SafeRoute" {
+        package "Notifications" {
+            package "Domain" {
+                package "Model" {
+                    class "NotificationError" as NotificationError {
+                        +Id: Guid
+                        +CreatedAt: DateTime
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                    package "Aggregates" {
+                        class "Notification" as Notification {
+                            +Id: NotificationId
+                            +OrganizationId: NotificationId
+                            +ParentId: NotificationId
+                            +TripId: NotificationId
+                            +Category: NotificationCategory
+                            +DeliveryState: NotificationDeliveryState
+                            +Message: NotificationMessage
+                            +SentAt: DateTimeOffset
+                            +Alerts: ICollection<Alert>
+                            +Announcements: ICollection<Announcement>
+                            +Dispatch(): void
+                            +MarkDelivered(): void
+                            +AddAlert(bool panic): void
+                            +AddAnnouncement(Guid routeId, string message): void
+                        }
+
+                    }
+                    package "Commands" {
+                        class "CreateNotificationCommand" as CreateNotificationCommand <<Command>> {
+                            +OrganizationId: Guid
+                            +ParentId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "DispatchNotificationCommand" as DispatchNotificationCommand <<Command>> {
+                            +NotificationId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "MarkNotificationDeliveredCommand" as MarkNotificationDeliveredCommand <<Command>> {
+                            +NotificationId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "TriggerAlertCommand" as TriggerAlertCommand <<Command>> {
+                            +NotificationId: Guid
+                            +Panic: bool
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "PublishAnnouncementCommand" as PublishAnnouncementCommand <<Command>> {
+                            +NotificationId: Guid
+                            +RouteId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "Queries" {
+                        class "GetAllNotificationsQuery" as GetAllNotificationsQuery <<Query>> {
+                            +Id: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetNotificationByIdQuery" as GetNotificationByIdQuery <<Query>> {
+                            +NotificationId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetNotificationsByParentIdQuery" as GetNotificationsByParentIdQuery <<Query>> {
+                            +ParentId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "ValueObjects" {
+                        class "NotificationCategory" as NotificationCategory {
+                            +Value: string
+                        }
+
+                        class "NotificationDeliveryState" as NotificationDeliveryState {
+                            +Value: string
+                        }
+
+                        class "NotificationId" as NotificationId {
+                            +Identifier: Guid
+                        }
+
+                        class "NotificationMessage" as NotificationMessage {
+                            +Content: string
+                        }
+
+                        class "AlertId" as AlertId {
+                            +Identifier: Guid
+                        }
+
+                        class "AnnouncementId" as AnnouncementId {
+                            +Identifier: Guid
+                        }
+
+                    }
+                    package "Entities" {
+                        class "Alert" as Alert {
+                            +Id: AlertId
+                            +NotificationId: NotificationId
+                            +TriggeredAt: DateTimeOffset
+                            +Panic: bool
+                        }
+
+                        class "Announcement" as Announcement {
+                            +Id: AnnouncementId
+                            +NotificationId: NotificationId
+                            +RouteId: NotificationId
+                            +Message: NotificationMessage
+                            +PublishedAt: DateTimeOffset
+                        }
+
+                    }
+                }
+                package "Repositories" {
+                    interface "INotificationRepository" as INotificationRepository <<Repository>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+            }
+            package "Application" {
+                package "CommandServices" {
+                    interface "INotificationCommandService" as INotificationCommandService <<ApplicationService>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+                package "QueryServices" {
+                    interface "INotificationQueryService" as INotificationQueryService <<ApplicationService>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+                package "Internal" {
+                    package "CommandServices" {
+                        class "NotificationCommandService" as NotificationCommandService <<ApplicationService>> {
+                            +NotificationRepository: INotificationRepository
+                            +UnitOfWork: IUnitOfWork
+                            +Handle(CreateNotificationCommand command, CancellationToken cancellationToken = default): Task<Result<Notification>>
+                            +Handle(DispatchNotificationCommand command, CancellationToken cancellationToken = default): Task<Result<Notification>>
+                        }
+
+                    }
+                    package "QueryServices" {
+                        class "NotificationQueryService" as NotificationQueryService <<ApplicationService>> {
+                            +NotificationRepository: INotificationRepository
+                            +CreatedAt: DateTime
+                            +Handle(GetNotificationByIdQuery query, CancellationToken cancellationToken = default): Task<Notification?>
+                            +Handle(GetAllNotificationsQuery query, CancellationToken cancellationToken = default): Task<IEnumerable<Notification>>
+                        }
+
+                    }
+                }
+            }
+            package "Interfaces" {
+                package "Rest" {
+                    class "NotificationsController" as NotificationsController <<Resource>> {
+                        +CommandService: INotificationCommandService
+                        +QueryService: INotificationQueryService
+                        +CreateNotification(CreateNotificationResource resource, CancellationToken cancellationToken): Task<IActionResult>
+                        +GetNotificationById(Guid notificationId, CancellationToken cancellationToken): Task<IActionResult>
+                    }
+
+                    package "Resources" {
+                        class "CreateNotificationResource" as CreateNotificationResource <<Resource>> {
+                            +OrganizationId: Guid
+                            +ParentId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "NotificationResource" as NotificationResource <<Resource>> {
+                            +Id: Guid
+                            +OrganizationId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "TriggerAlertResource" as TriggerAlertResource <<Resource>> {
+                            +Panic: bool
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "PublishAnnouncementResource" as PublishAnnouncementResource <<Resource>> {
+                            +RouteId: Guid
+                            +Message: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AlertResource" as AlertResource <<Resource>> {
+                            +Id: Guid
+                            +TriggeredAt: DateTimeOffset
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AnnouncementResource" as AnnouncementResource <<Resource>> {
+                            +Id: Guid
+                            +RouteId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                }
+            }
+            package "Infrastructure" {
+                package "Persistence" {
+                    package "EntityFrameworkCore" {
+                        package "Repositories" {
+                            class "NotificationRepository" as NotificationRepository <<Repository>> {
+                                +Context: AppDbContext
+                                +CreatedAt: DateTime
+                                +FindByIdAsync(Guid id): Task<Notification?>
+                                +FindByParentIdAsync(Guid parentId): Task<IEnumerable<Notification>>
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+package "Shared" as Shared { }
+
+' ─── Relationships ───
+Alert ..> NotificationId : uses
+Alert *-- AlertId : contains
+Alert *-- NotificationId : contains
+Announcement ..> NotificationId : uses
+Announcement *-- AnnouncementId : contains
+Announcement *-- NotificationId : contains
+Announcement *-- NotificationMessage : contains
+INotificationRepository ..|> Shared : implements IBaseRepository
+Notification ..> CreateNotificationCommand : uses
+Notification *-- Alert : contains
+Notification *-- Announcement : contains
+Notification *-- NotificationCategory : contains
+Notification *-- NotificationDeliveryState : contains
+Notification *-- NotificationId : contains
+Notification *-- NotificationMessage : contains
+NotificationCommandService ..> CancellationToken : uses
+NotificationCommandService ..> CreateNotificationCommand : handles
+NotificationCommandService ..> DispatchNotificationCommand : handles
+NotificationCommandService ..> MarkNotificationDeliveredCommand : handles
+NotificationCommandService ..> Notification : uses
+NotificationCommandService ..> PublishAnnouncementCommand : handles
+NotificationCommandService ..> TriggerAlertCommand : handles
+NotificationCommandService *-- INotificationRepository : contains
+NotificationCommandService *-- Shared : contains IUnitOfWork
+NotificationQueryService ..> CancellationToken : uses
+NotificationQueryService ..> GetAllNotificationsQuery : handles
+NotificationQueryService ..> GetNotificationByIdQuery : handles
+NotificationQueryService ..> GetNotificationsByParentIdQuery : handles
+NotificationQueryService ..> Notification : uses
+NotificationQueryService *-- INotificationRepository : contains
+NotificationRepository ..> Notification : uses
+NotificationRepository *-- Shared : contains AppDbContext
+NotificationResource *-- AlertResource : contains
+NotificationResource *-- AnnouncementResource : contains
+NotificationsController ..> CancellationToken : uses
+NotificationsController ..> CreateNotificationResource : uses
+NotificationsController ..> PublishAnnouncementResource : uses
+NotificationsController ..> TriggerAlertResource : uses
+NotificationsController *-- INotificationCommandService : contains
+NotificationsController *-- INotificationQueryService : contains
+NotificationsController *-- Shared : contains ProblemDetailsFactory
+@enduml

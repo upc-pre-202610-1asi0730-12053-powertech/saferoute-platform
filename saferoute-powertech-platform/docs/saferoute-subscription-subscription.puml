@@ -1,0 +1,330 @@
+@startuml
+skinparam monochrome false
+left to right direction
+
+    package "SafeRoute" {
+        package "Subscription" {
+            package "Domain" {
+                package "Model" {
+                    class "SubscriptionError" as SubscriptionError {
+                        +Id: Guid
+                        +CreatedAt: DateTime
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                    package "Aggregates" {
+                        class "Subscription" as Subscription {
+                            +Id: SubscriptionId
+                            +OrganizationId: OrganizationId
+                            +PlanId: PlanId
+                            +State: SubscriptionState
+                            +StartDate: DateTimeOffset
+                            +EndDate: DateTimeOffset
+                            +Activate(): void
+                            +Upgrade(PlanId planId): void
+                            +Cancel(): void
+                            +IsActive(): bool
+                            +GetPlanId(): PlanId
+                            +GetRemainingDays(): int
+                        }
+
+                        class "Plan" as Plan {
+                            +Id: PlanId
+                            +Tier: PlanTier
+                            +GetPlanName(): string
+                            +GetRouteLimit(): int
+                        }
+
+                    }
+                    package "Commands" {
+                        class "ActivateSubscriptionCommand" as ActivateSubscriptionCommand <<Command>> {
+                            +SubscriptionId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "CancelSubscriptionCommand" as CancelSubscriptionCommand <<Command>> {
+                            +SubscriptionId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "CreateSubscriptionCommand" as CreateSubscriptionCommand <<Command>> {
+                            +OrganizationId: Guid
+                            +PlanId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "UpgradeSubscriptionCommand" as UpgradeSubscriptionCommand <<Command>> {
+                            +SubscriptionId: Guid
+                            +PlanId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "CreatePlanCommand" as CreatePlanCommand <<Command>> {
+                            +PlanTier: string
+                            +MaxRoutes: int
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "Queries" {
+                        class "GetAllSubscriptionsQuery" as GetAllSubscriptionsQuery <<Query>> {
+                            +Id: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetSubscriptionByIdQuery" as GetSubscriptionByIdQuery <<Query>> {
+                            +SubscriptionId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetSubscriptionsByOrganizationIdQuery" as GetSubscriptionsByOrganizationIdQuery <<Query>> {
+                            +OrganizationId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetPlanByIdQuery" as GetPlanByIdQuery <<Query>> {
+                            +PlanId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetAllPlansQuery" as GetAllPlansQuery <<Query>> {
+                            +Id: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "ValueObjects" {
+                        class "SubscriptionState" as SubscriptionState {
+                            +Value: string
+                            +IsActive(): bool
+                            +IsExpired(): bool
+                            +IsCancelled(): bool
+                            +ToString(): string
+                        }
+
+                        class "PlanTier" as PlanTier {
+                            +Value: string
+                            +CreatedAt: DateTime
+                            +IsBasic(): bool
+                            +IsIntermediate(): bool
+                        }
+
+                        class "RouteQuota" as RouteQuota {
+                            +MaxRoutes: int
+                            +CreatedAt: DateTime
+                            +IsWithinLimit(int current): bool
+                            +GetMaxRoutes(): int
+                        }
+
+                        class "DriverQuota" as DriverQuota {
+                            +MaxDrivers: int
+                            +CreatedAt: DateTime
+                            +IsWithinLimit(int current): bool
+                            +GetMaxDrivers(): int
+                        }
+
+                    }
+                }
+                package "Repositories" {
+                    interface "ISubscriptionRepository" as ISubscriptionRepository <<Repository>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                    interface "IPlanRepository" as IPlanRepository <<Repository>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+            }
+            package "Application" {
+                package "CommandServices" {
+                    interface "ISubscriptionCommandService" as ISubscriptionCommandService <<ApplicationService>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+                package "QueryServices" {
+                    interface "ISubscriptionQueryService" as ISubscriptionQueryService <<ApplicationService>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+                package "Internal" {
+                    package "CommandServices" {
+                        class "SubscriptionCommandService" as SubscriptionCommandService <<ApplicationService>> {
+                            +PlanRepository: IPlanRepository
+                            +SubscriptionRepository: ISubscriptionRepository
+                            +Handle(CreatePlanCommand command, CancellationToken cancellationToken): Task<Result<Plan>>
+                            +Handle(CreateSubscriptionCommand command, CancellationToken cancellationToken): Task<Result<SubscriptionAggregate>>
+                        }
+
+                    }
+                    package "QueryServices" {
+                        class "SubscriptionQueryService" as SubscriptionQueryService <<ApplicationService>> {
+                            +PlanRepository: IPlanRepository
+                            +SubscriptionRepository: ISubscriptionRepository
+                            +Handle(GetPlanByIdQuery query, CancellationToken cancellationToken): Task<Plan?>
+                            +Handle(GetAllPlansQuery query, CancellationToken cancellationToken): Task<IEnumerable<Plan>>
+                        }
+
+                    }
+                }
+            }
+            package "Interfaces" {
+                package "Rest" {
+                    class "SubscriptionsController" as SubscriptionsController <<Resource>> {
+                        +CommandService: ISubscriptionCommandService
+                        +QueryService: ISubscriptionQueryService
+                        +CreateSubscription(CreateSubscriptionResource resource, CancellationToken cancellationToken): Task<IActionResult>
+                        +GetSubscriptionById(Guid subscriptionId, CancellationToken cancellationToken): Task<IActionResult>
+                    }
+
+                    class "PlansController" as PlansController <<Resource>> {
+                        +CommandService: ISubscriptionCommandService
+                        +QueryService: ISubscriptionQueryService
+                        +CreatePlan(CreatePlanResource resource, CancellationToken cancellationToken): Task<IActionResult>
+                        +GetPlanById(Guid planId, CancellationToken cancellationToken): Task<IActionResult>
+                    }
+
+                    package "Resources" {
+                        class "CreateSubscriptionResource" as CreateSubscriptionResource <<Resource>> {
+                            +OrganizationId: Guid
+                            +PlanId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "SubscriptionResource" as SubscriptionResource <<Resource>> {
+                            +Id: Guid
+                            +OrganizationId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "UpgradeSubscriptionResource" as UpgradeSubscriptionResource <<Resource>> {
+                            +PlanId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "CreatePlanResource" as CreatePlanResource <<Resource>> {
+                            +PlanTier: string
+                            +MaxRoutes: int
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                }
+            }
+            package "Infrastructure" {
+                package "Persistence" {
+                    package "EntityFrameworkCore" {
+                        package "Repositories" {
+                            class "SubscriptionRepository" as SubscriptionRepository <<Repository>> {
+                                +Context: AppDbContext
+                                +CreatedAt: DateTime
+                                +FindBySubscriptionIdAsync(SubscriptionId subscriptionId, CancellationToken cancellationToken): Task<SubscriptionAggregate?>
+                                +FindByOrganizationIdAsync(OrganizationId organizationId, CancellationToken cancellationToken): Task<IEnumerable<SubscriptionAggregate>>
+                            }
+
+                            class "PlanRepository" as PlanRepository <<Repository>> {
+                                +Context: AppDbContext
+                                +CreatedAt: DateTime
+                                +FindByPlanIdAsync(PlanId planId, CancellationToken cancellationToken): Task<Plan?>
+                                +ToString(): string
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+package "Shared" as Shared { }
+
+' ─── Relationships ───
+IPlanRepository ..|> Shared : implements IBaseRepository
+ISubscriptionRepository ..|> Shared : implements IBaseRepository
+Plan ..> CreatePlanCommand : uses
+Plan ..> DriverQuota : uses
+Plan ..> PlanTier : uses
+Plan ..> RouteQuota : uses
+Plan *-- DriverQuota : contains
+Plan *-- PlanTier : contains
+Plan *-- RouteQuota : contains
+Plan *-- Shared : contains PlanId
+PlanRepository ..> CancellationToken : uses
+PlanRepository ..> Plan : uses
+PlanRepository ..> Shared : uses PlanId
+PlanRepository *-- Shared : contains AppDbContext
+PlansController ..> CancellationToken : uses
+PlansController ..> CreatePlanResource : uses
+PlansController *-- ISubscriptionCommandService : contains
+PlansController *-- ISubscriptionQueryService : contains
+PlansController *-- Shared : contains ProblemDetailsFactory
+Subscription ..> CreateSubscriptionCommand : uses
+Subscription ..> Shared : uses OrganizationId
+Subscription ..> Shared : uses PlanId
+Subscription *-- Shared : contains OrganizationId
+Subscription *-- Shared : contains PlanId
+Subscription *-- Shared : contains SubscriptionId
+Subscription *-- SubscriptionState : contains
+SubscriptionCommandService ..> "Action<SubscriptionAggregate>" : uses
+SubscriptionCommandService ..> ActivateSubscriptionCommand : handles
+SubscriptionCommandService ..> CancellationToken : uses
+SubscriptionCommandService ..> CancelSubscriptionCommand : handles
+SubscriptionCommandService ..> CreatePlanCommand : handles
+SubscriptionCommandService ..> CreateSubscriptionCommand : handles
+SubscriptionCommandService ..> Plan : uses
+SubscriptionCommandService ..> SubscriptionAggregate : uses
+SubscriptionCommandService ..> UpgradeSubscriptionCommand : handles
+SubscriptionCommandService *-- IPlanRepository : contains
+SubscriptionCommandService *-- ISubscriptionRepository : contains
+SubscriptionCommandService *-- Shared : contains IUnitOfWork
+SubscriptionQueryService ..> CancellationToken : uses
+SubscriptionQueryService ..> GetAllPlansQuery : handles
+SubscriptionQueryService ..> GetAllSubscriptionsQuery : handles
+SubscriptionQueryService ..> GetPlanByIdQuery : handles
+SubscriptionQueryService ..> GetSubscriptionByIdQuery : handles
+SubscriptionQueryService ..> GetSubscriptionsByOrganizationIdQuery : handles
+SubscriptionQueryService ..> Plan : uses
+SubscriptionQueryService ..> SubscriptionAggregate : uses
+SubscriptionQueryService *-- IPlanRepository : contains
+SubscriptionQueryService *-- ISubscriptionRepository : contains
+SubscriptionRepository ..> CancellationToken : uses
+SubscriptionRepository ..> Shared : uses OrganizationId
+SubscriptionRepository ..> Shared : uses SubscriptionId
+SubscriptionRepository ..> SubscriptionAggregate : uses
+SubscriptionRepository *-- Shared : contains AppDbContext
+SubscriptionsController ..> CancellationToken : uses
+SubscriptionsController ..> CreateSubscriptionResource : uses
+SubscriptionsController ..> UpgradeSubscriptionResource : uses
+SubscriptionsController *-- ISubscriptionCommandService : contains
+SubscriptionsController *-- ISubscriptionQueryService : contains
+SubscriptionsController *-- Shared : contains ProblemDetailsFactory
+@enduml

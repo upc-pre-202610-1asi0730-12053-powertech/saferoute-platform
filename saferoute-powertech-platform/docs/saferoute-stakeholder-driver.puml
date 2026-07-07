@@ -1,0 +1,508 @@
+@startuml
+skinparam monochrome false
+left to right direction
+
+    package "SafeRoute" {
+        package "Stakeholder" {
+            package "Domain" {
+                package "Model" {
+                    package "Entities" {
+                        class "Driver" as Driver {
+                            +Id: DriverId
+                            +OrganizationId: OrganizationId
+                            +UserId: UserId
+                            +FullName: FullName
+                            +Email: Email
+                            +PhoneNumber: PhoneNumber
+                            +LicenseNumber: LicenseNumber
+                            +Available: bool
+                            +IsAvailable(): bool
+                            +GetFullName(): string
+                            +GetLicenseNumber(): string
+                            +UpdatePhoneNumber(PhoneNumber phone): void
+                            +Update(FullName fullName, Email email, PhoneNumber phoneNumber, LicenseNumber licenseNumber, bool available): void
+                        }
+
+                        class "StudentGroup" as StudentGroup {
+                            +Id: StudentGroupId
+                            +OrganizationId: OrganizationId
+                            +AddChild(ChildId childId): void
+                            +RemoveChild(ChildId childId): void
+                        }
+
+                        class "Child" as Child {
+                            +Id: ChildId
+                            +FullName: FullName
+                            +Enroll(): void
+                            +Unenroll(): void
+                        }
+
+                    }
+                    package "Commands" {
+                        class "CreateDriverCommand" as CreateDriverCommand <<Command>> {
+                            +OrganizationId: Guid
+                            +UserId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "DeleteDriverCommand" as DeleteDriverCommand <<Command>> {
+                            +DriverId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "UpdateDriverCommand" as UpdateDriverCommand <<Command>> {
+                            +DriverId: Guid
+                            +FirstName: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "UpdateDriverPhoneCommand" as UpdateDriverPhoneCommand <<Command>> {
+                            +DriverId: Guid
+                            +PhoneNumber: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "CreateParentCommand" as CreateParentCommand <<Command>> {
+                            +OrganizationId: Guid
+                            +UserId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "UpdateParentCommand" as UpdateParentCommand <<Command>> {
+                            +ParentId: Guid
+                            +FirstName: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "DeleteParentCommand" as DeleteParentCommand <<Command>> {
+                            +ParentId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AddChildToParentCommand" as AddChildToParentCommand <<Command>> {
+                            +ParentId: Guid
+                            +FirstName: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "RemoveChildFromParentCommand" as RemoveChildFromParentCommand <<Command>> {
+                            +ParentId: Guid
+                            +ChildId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "CreateStudentGroupCommand" as CreateStudentGroupCommand <<Command>> {
+                            +OrganizationId: Guid
+                            +Name: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AddChildToGroupCommand" as AddChildToGroupCommand <<Command>> {
+                            +StudentGroupId: Guid
+                            +ChildId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "RemoveChildFromGroupCommand" as RemoveChildFromGroupCommand <<Command>> {
+                            +StudentGroupId: Guid
+                            +ChildId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "FinalizeStudentGroupCommand" as FinalizeStudentGroupCommand <<Command>> {
+                            +StudentGroupId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "Queries" {
+                        class "GetAllDriversQuery" as GetAllDriversQuery <<Query>> {
+                            +Id: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetDriverByIdQuery" as GetDriverByIdQuery <<Query>> {
+                            +DriverId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetParentByIdQuery" as GetParentByIdQuery <<Query>> {
+                            +ParentId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetAllParentsQuery" as GetAllParentsQuery <<Query>> {
+                            +Id: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetStudentGroupByIdQuery" as GetStudentGroupByIdQuery <<Query>> {
+                            +StudentGroupId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetAllStudentGroupsQuery" as GetAllStudentGroupsQuery <<Query>> {
+                            +Id: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "ValueObjects" {
+                        class "PhoneNumber" as PhoneNumber {
+                            +Value: string
+                            +IsValid(): bool
+                            +ToString(): string
+                        }
+
+                        class "LicenseNumber" as LicenseNumber {
+                            +Value: string
+                            +IsValid(): bool
+                            +ToString(): string
+                        }
+
+                        class "StudentGroupId" as StudentGroupId {
+                            +Identifier: Guid
+                            +CreatedAt: DateTime
+                            +New(): StudentGroupId
+                            +ToString(): string
+                        }
+
+                        class "ChildEnrollmentState" as ChildEnrollmentState {
+                            +Value: string
+                            +CreatedAt: DateTime
+                            +IsActive(): bool
+                            +IsInactive(): bool
+                        }
+
+                    }
+                    package "Aggregates" {
+                        class "Parent" as Parent {
+                            +Id: ParentId
+                            +OrganizationId: OrganizationId
+                            +AddChild(Child child): void
+                            +RemoveChild(ChildId childId): void
+                        }
+
+                    }
+                }
+                package "Repositories" {
+                    interface "IDriverRepository" as IDriverRepository <<Repository>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                    interface "IParentRepository" as IParentRepository <<Repository>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                    interface "IStudentGroupRepository" as IStudentGroupRepository <<Repository>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+            }
+            package "Interfaces" {
+                package "Rest" {
+                    class "DriversController" as DriversController <<Resource>> {
+                        +CommandService: IStakeholderCommandService
+                        +QueryService: IStakeholderQueryService
+                        +CreateDriver(CreateDriverResource resource, CancellationToken cancellationToken): Task<IActionResult>
+                        +GetDriverById(Guid driverId, CancellationToken cancellationToken): Task<IActionResult>
+                    }
+
+                    class "ProfilesController" as ProfilesController <<Resource>> {
+                        +QueryService: IStakeholderQueryService
+                        +ProblemDetailsFactory: ProblemDetailsFactory
+                        +GetProfiles(CancellationToken cancellationToken): Task<IActionResult>
+                        +GetProfileById(Guid profileId, CancellationToken cancellationToken): Task<IActionResult>
+                    }
+
+                    class "ParentsController" as ParentsController <<Resource>> {
+                        +CommandService: IStakeholderCommandService
+                        +QueryService: IStakeholderQueryService
+                        +CreateParent(CreateParentResource resource, CancellationToken cancellationToken): Task<IActionResult>
+                        +GetParentById(Guid parentId, CancellationToken cancellationToken): Task<IActionResult>
+                    }
+
+                    class "StudentGroupsController" as StudentGroupsController <<Resource>> {
+                        +CommandService: IStakeholderCommandService
+                        +QueryService: IStakeholderQueryService
+                        +CreateGroup(CreateStudentGroupResource resource, CancellationToken cancellationToken): Task<IActionResult>
+                        +GetGroupById(Guid studentGroupId, CancellationToken cancellationToken): Task<IActionResult>
+                    }
+
+                    package "Resources" {
+                        class "CreateDriverResource" as CreateDriverResource <<Resource>> {
+                            +OrganizationId: Guid
+                            +UserId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "DriverResource" as DriverResource <<Resource>> {
+                            +Id: Guid
+                            +OrganizationId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "UpdateDriverPhoneResource" as UpdateDriverPhoneResource <<Resource>> {
+                            +PhoneNumber: string
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "ProfileResource" as ProfileResource <<Resource>> {
+                            +Id: Guid
+                            +OrganizationId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "CreateParentResource" as CreateParentResource <<Resource>> {
+                            +OrganizationId: Guid
+                            +UserId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AddChildResource" as AddChildResource <<Resource>> {
+                            +FirstName: string
+                            +LastName: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "CreateStudentGroupResource" as CreateStudentGroupResource <<Resource>> {
+                            +OrganizationId: Guid
+                            +Name: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GroupChildResource" as GroupChildResource <<Resource>> {
+                            +ChildId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                }
+            }
+            package "Infrastructure" {
+                package "Persistence" {
+                    package "EntityFrameworkCore" {
+                        package "Repositories" {
+                            class "DriverRepository" as DriverRepository <<Repository>> {
+                                +Context: AppDbContext
+                                +CreatedAt: DateTime
+                                +FindByDriverIdAsync(DriverId driverId, CancellationToken cancellationToken): Task<Driver?>
+                                +ToString(): string
+                            }
+
+                            class "ParentRepository" as ParentRepository <<Repository>> {
+                                +Context: AppDbContext
+                                +CreatedAt: DateTime
+                                +FindByParentIdAsync(ParentId parentId, CancellationToken cancellationToken): Task<Parent?>
+                                +ToString(): string
+                            }
+
+                            class "StudentGroupRepository" as StudentGroupRepository <<Repository>> {
+                                +Context: AppDbContext
+                                +CreatedAt: DateTime
+                                +FindByStudentGroupIdAsync(StudentGroupId studentGroupId, CancellationToken cancellationToken): Task<StudentGroup?>
+                                +ToString(): string
+                            }
+
+                        }
+                    }
+                }
+            }
+            package "Application" {
+                package "Internal" {
+                    package "CommandServices" {
+                        class "StakeholderCommandService" as StakeholderCommandService <<ApplicationService>> {
+                            +ParentRepository: IParentRepository
+                            +DriverRepository: IDriverRepository
+                            +Handle(CreateParentCommand command, CancellationToken cancellationToken): Task<Result<Parent>>
+                            +Handle(UpdateParentCommand command, CancellationToken cancellationToken): Task<Result<Parent>>
+                        }
+
+                    }
+                    package "QueryServices" {
+                        class "StakeholderQueryService" as StakeholderQueryService <<ApplicationService>> {
+                            +ParentRepository: IParentRepository
+                            +DriverRepository: IDriverRepository
+                            +Handle(GetParentByIdQuery query, CancellationToken cancellationToken): Task<Parent?>
+                            +Handle(GetAllParentsQuery query, CancellationToken cancellationToken): Task<IEnumerable<Parent>>
+                        }
+
+                    }
+                }
+                package "CommandServices" {
+                    interface "IStakeholderCommandService" as IStakeholderCommandService <<ApplicationService>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+                package "QueryServices" {
+                    interface "IStakeholderQueryService" as IStakeholderQueryService <<ApplicationService>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+            }
+        }
+    }
+
+package "Shared" as Shared { }
+
+package "Iam" as Iam { }
+
+' ─── Relationships ───
+Child ..> Shared : uses FullName
+Child *-- ChildEnrollmentState : contains
+Child *-- Shared : contains ChildId
+Child *-- Shared : contains FullName
+Driver ..> CreateDriverCommand : uses
+Driver ..> Iam : uses Email
+Driver ..> LicenseNumber : uses
+Driver ..> PhoneNumber : uses
+Driver ..> Shared : uses FullName
+Driver *-- Iam : contains Email
+Driver *-- LicenseNumber : contains
+Driver *-- PhoneNumber : contains
+Driver *-- Shared : contains DriverId
+Driver *-- Shared : contains FullName
+Driver *-- Shared : contains OrganizationId
+Driver *-- Shared : contains UserId
+DriverRepository ..> CancellationToken : uses
+DriverRepository ..> Driver : uses
+DriverRepository ..> Shared : uses DriverId
+DriverRepository *-- Shared : contains AppDbContext
+DriversController ..> CancellationToken : uses
+DriversController ..> CreateDriverResource : uses
+DriversController ..> UpdateDriverPhoneResource : uses
+DriversController *-- IStakeholderCommandService : contains
+DriversController *-- IStakeholderQueryService : contains
+DriversController *-- Shared : contains ProblemDetailsFactory
+IDriverRepository ..|> Shared : implements IBaseRepository
+IParentRepository ..|> Shared : implements IBaseRepository
+IStudentGroupRepository ..|> Shared : implements IBaseRepository
+Parent ..> Child : uses
+Parent ..> CreateParentCommand : uses
+Parent ..> Iam : uses Email
+Parent ..> PhoneNumber : uses
+Parent ..> Shared : uses ChildId
+Parent ..> Shared : uses FullName
+Parent ..> Shared : uses OrganizationId
+Parent ..> Shared : uses UserId
+Parent *-- Child : contains
+Parent *-- Iam : contains Email
+Parent *-- PhoneNumber : contains
+Parent *-- Shared : contains FullName
+Parent *-- Shared : contains OrganizationId
+Parent *-- Shared : contains ParentId
+Parent *-- Shared : contains UserId
+ParentRepository ..> CancellationToken : uses
+ParentRepository ..> Parent : uses
+ParentRepository ..> Shared : uses ParentId
+ParentRepository *-- Shared : contains AppDbContext
+ParentsController ..> AddChildResource : uses
+ParentsController ..> CancellationToken : uses
+ParentsController ..> CreateParentResource : uses
+ParentsController *-- IStakeholderCommandService : contains
+ParentsController *-- IStakeholderQueryService : contains
+ParentsController *-- Shared : contains ProblemDetailsFactory
+ProfilesController ..> CancellationToken : uses
+ProfilesController ..> Driver : uses
+ProfilesController ..> Parent : uses
+ProfilesController ..> ProfileResource : uses
+ProfilesController *-- IStakeholderQueryService : contains
+ProfilesController *-- Shared : contains ProblemDetailsFactory
+StakeholderCommandService ..> "Action<Parent>" : uses
+StakeholderCommandService ..> "Action<StudentGroup>" : uses
+StakeholderCommandService ..> AddChildToGroupCommand : handles
+StakeholderCommandService ..> AddChildToParentCommand : handles
+StakeholderCommandService ..> CancellationToken : uses
+StakeholderCommandService ..> CreateDriverCommand : handles
+StakeholderCommandService ..> CreateParentCommand : handles
+StakeholderCommandService ..> CreateStudentGroupCommand : handles
+StakeholderCommandService ..> DeleteDriverCommand : handles
+StakeholderCommandService ..> DeleteParentCommand : handles
+StakeholderCommandService ..> Driver : uses
+StakeholderCommandService ..> FinalizeStudentGroupCommand : handles
+StakeholderCommandService ..> Parent : uses
+StakeholderCommandService ..> RemoveChildFromGroupCommand : handles
+StakeholderCommandService ..> RemoveChildFromParentCommand : handles
+StakeholderCommandService ..> StudentGroup : uses
+StakeholderCommandService ..> UpdateDriverCommand : handles
+StakeholderCommandService ..> UpdateDriverPhoneCommand : handles
+StakeholderCommandService ..> UpdateParentCommand : handles
+StakeholderCommandService *-- IDriverRepository : contains
+StakeholderCommandService *-- IParentRepository : contains
+StakeholderCommandService *-- IStudentGroupRepository : contains
+StakeholderCommandService *-- Shared : contains IUnitOfWork
+StakeholderQueryService ..> CancellationToken : uses
+StakeholderQueryService ..> Driver : uses
+StakeholderQueryService ..> GetAllDriversQuery : handles
+StakeholderQueryService ..> GetAllParentsQuery : handles
+StakeholderQueryService ..> GetAllStudentGroupsQuery : handles
+StakeholderQueryService ..> GetDriverByIdQuery : handles
+StakeholderQueryService ..> GetParentByIdQuery : handles
+StakeholderQueryService ..> GetStudentGroupByIdQuery : handles
+StakeholderQueryService ..> Parent : uses
+StakeholderQueryService ..> StudentGroup : uses
+StakeholderQueryService *-- IDriverRepository : contains
+StakeholderQueryService *-- IParentRepository : contains
+StakeholderQueryService *-- IStudentGroupRepository : contains
+StudentGroup ..> Shared : uses ChildId
+StudentGroup ..> Shared : uses OrganizationId
+StudentGroup *-- Shared : contains ChildId
+StudentGroup *-- Shared : contains OrganizationId
+StudentGroup *-- StudentGroupId : contains
+StudentGroupRepository ..> CancellationToken : uses
+StudentGroupRepository ..> StudentGroup : uses
+StudentGroupRepository ..> StudentGroupId : uses
+StudentGroupRepository *-- Shared : contains AppDbContext
+StudentGroupsController ..> CancellationToken : uses
+StudentGroupsController ..> CreateStudentGroupResource : uses
+StudentGroupsController ..> GroupChildResource : uses
+StudentGroupsController *-- IStakeholderCommandService : contains
+StudentGroupsController *-- IStakeholderQueryService : contains
+StudentGroupsController *-- Shared : contains ProblemDetailsFactory
+@enduml

@@ -1,0 +1,355 @@
+@startuml
+skinparam monochrome false
+left to right direction
+
+    package "SafeRoute" {
+        package "Iam" {
+            package "Domain" {
+                package "Model" {
+                    package "Aggregates" {
+                        class "Organization" as Organization {
+                            +Id: OrganizationId
+                            +Name: OrganizationName
+                            +Status: OrganizationStatus
+                            +CreatedAt: DateTimeOffset?
+                            +UpdatedAt: DateTimeOffset?
+                            +UpdateName(OrganizationName name): void
+                            +Suspend(): void
+                            +Activate(): void
+                            +IsActive(): bool
+                            +GetName(): string
+                        }
+
+                        class "User" as User {
+                            +Id: UserId
+                            +OrganizationId: OrganizationId?
+                            +IsAdmin(): bool
+                            +GetFullName(): string
+                        }
+
+                    }
+                    package "Commands" {
+                        class "CreateOrganizationCommand" as CreateOrganizationCommand <<Command>> {
+                            +Name: string
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "UpdateOrganizationCommand" as UpdateOrganizationCommand <<Command>> {
+                            +OrganizationId: Guid
+                            +Name: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "SignUpCommand" as SignUpCommand <<Command>> {
+                            +FirstName: string
+                            +LastName: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "Queries" {
+                        class "GetOrganizationByIdQuery" as GetOrganizationByIdQuery <<Query>> {
+                            +OrganizationId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetUserByIdQuery" as GetUserByIdQuery <<Query>> {
+                            +UserId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetAllUsersQuery" as GetAllUsersQuery <<Query>> {
+                            +Id: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "ValueObjects" {
+                        class "OrganizationName" as OrganizationName {
+                            +Value: string
+                            +ToString(): string
+                        }
+
+                        class "OrganizationStatus" as OrganizationStatus {
+                            +Value: string
+                            +CreateActive(): OrganizationStatus
+                            +CreateSuspended(): OrganizationStatus
+                            +IsActive(): bool
+                            +IsSuspended(): bool
+                            +ToString(): string
+                        }
+
+                        class "Email" as Email {
+                            +Value: string
+                            +CreatedAt: DateTime
+                            +ToString(): string
+                            -IsValidEmail(string value): bool
+                        }
+
+                        class "PasswordHash" as PasswordHash {
+                            +Value: string
+                            +CreatedAt: DateTime
+                            +ToString(): string
+                            +ToString(): string
+                        }
+
+                        class "RoleTier" as RoleTier {
+                            +Value: string
+                            +CreatedAt: DateTime
+                            +IsAdmin(): bool
+                            +IsDriver(): bool
+                        }
+
+                    }
+                }
+                package "Repositories" {
+                    interface "IOrganizationRepository" as IOrganizationRepository <<Repository>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                    interface "IUserRepository" as IUserRepository <<Repository>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+            }
+            package "Interfaces" {
+                package "Rest" {
+                    class "OrganizationsController" as OrganizationsController <<Resource>> {
+                        +CommandService: IIamCommandService
+                        +QueryService: IIamQueryService
+                        +CreateOrganization(CreateOrganizationResource resource, CancellationToken cancellationToken): Task<IActionResult>
+                        +GetOrganizationById(Guid organizationId, CancellationToken cancellationToken): Task<IActionResult>
+                    }
+
+                    class "UsersController" as UsersController <<Resource>> {
+                        +CommandService: IIamCommandService
+                        +QueryService: IIamQueryService
+                        +SignUp(SignUpResource resource, CancellationToken cancellationToken): Task<IActionResult>
+                        +SignIn(SignInResource resource, CancellationToken cancellationToken): Task<IActionResult>
+                    }
+
+                    package "Resources" {
+                        class "CreateOrganizationResource" as CreateOrganizationResource <<Resource>> {
+                            +Name: string
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "OrganizationResource" as OrganizationResource <<Resource>> {
+                            +Id: Guid
+                            +Name: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "UpdateOrganizationResource" as UpdateOrganizationResource <<Resource>> {
+                            +Name: string
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "SignUpResource" as SignUpResource <<Resource>> {
+                            +FirstName: string
+                            +LastName: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "SignInResource" as SignInResource <<Resource>> {
+                            +Email: string
+                            +Password: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                }
+            }
+            package "Infrastructure" {
+                package "Persistence" {
+                    package "EntityFrameworkCore" {
+                        package "Repositories" {
+                            class "OrganizationRepository" as OrganizationRepository <<Repository>> {
+                                +Context: AppDbContext
+                                +CreatedAt: DateTime
+                                +FindByOrganizationIdAsync(OrganizationId organizationId, CancellationToken cancellationToken): Task<Organization?>
+                                +ToString(): string
+                            }
+
+                            class "UserRepository" as UserRepository <<Repository>> {
+                                +Context: AppDbContext
+                                +CreatedAt: DateTime
+                                +FindByUserIdAsync(UserId userId, CancellationToken cancellationToken): Task<User?>
+                                +FindByEmailAsync(string email, CancellationToken cancellationToken): Task<User?>
+                            }
+
+                        }
+                    }
+                }
+                package "Hashing" {
+                    package "BCrypt" {
+                        package "Services" {
+                            class "HashingService" as HashingService {
+                                +Id: Guid
+                                +CreatedAt: DateTime
+                                +HashPassword(string password): string
+                                +VerifyPassword(string password, string passwordHash): bool
+                            }
+
+                        }
+                    }
+                }
+                package "Tokens" {
+                    package "Jwt" {
+                        package "Services" {
+                            class "TokenService" as TokenService {
+                                +TokenSettings: IOptions<TokenSettings>
+                                -_tokenSettings: TokenSettings
+                                +GenerateToken(User user): string
+                                +ToString(): string
+                            }
+
+                        }
+                        package "Configuration" {
+                            class "TokenSettings" as TokenSettings {
+                                +ExpirationDays: int
+                                +CreatedAt: DateTime
+                                +Validate(): bool
+                                +ToString(): string
+                            }
+
+                        }
+                    }
+                }
+            }
+            package "Application" {
+                package "Internal" {
+                    package "CommandServices" {
+                        class "IamCommandService" as IamCommandService <<ApplicationService>> {
+                            +UserRepository: IUserRepository
+                            +OrganizationRepository: IOrganizationRepository
+                            +Handle(SignUpCommand command, CancellationToken cancellationToken): Task<Result<User>>
+                            +Handle(CreateOrganizationCommand command, CancellationToken cancellationToken): Task<Result<Organization>>
+                        }
+
+                    }
+                    package "QueryServices" {
+                        class "IamQueryService" as IamQueryService <<ApplicationService>> {
+                            +UserRepository: IUserRepository
+                            +OrganizationRepository: IOrganizationRepository
+                            +Handle(GetUserByIdQuery query, CancellationToken cancellationToken): Task<User?>
+                            +Handle(GetAllUsersQuery query, CancellationToken cancellationToken): Task<IEnumerable<User>>
+                        }
+
+                    }
+                    package "OutboundServices" {
+                        interface "IHashingService" as IHashingService {
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        interface "ITokenService" as ITokenService {
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                }
+                package "CommandServices" {
+                    interface "IIamCommandService" as IIamCommandService <<ApplicationService>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+                package "QueryServices" {
+                    interface "IIamQueryService" as IIamQueryService <<ApplicationService>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+            }
+        }
+    }
+
+package "Shared" as Shared { }
+
+' ─── Relationships ───
+HashingService ..|> IHashingService : implements
+IamCommandService ..> CancellationToken : uses
+IamCommandService ..> CreateOrganizationCommand : handles
+IamCommandService ..> Organization : uses
+IamCommandService ..> SignUpCommand : handles
+IamCommandService ..> UpdateOrganizationCommand : handles
+IamCommandService ..> User : uses
+IamCommandService *-- IHashingService : contains
+IamCommandService *-- IOrganizationRepository : contains
+IamCommandService *-- ITokenService : contains
+IamCommandService *-- IUserRepository : contains
+IamCommandService *-- Shared : contains IUnitOfWork
+IamQueryService ..> CancellationToken : uses
+IamQueryService ..> GetAllUsersQuery : handles
+IamQueryService ..> GetOrganizationByIdQuery : handles
+IamQueryService ..> GetUserByIdQuery : handles
+IamQueryService ..> Organization : uses
+IamQueryService ..> User : uses
+IamQueryService *-- IOrganizationRepository : contains
+IamQueryService *-- IUserRepository : contains
+IOrganizationRepository ..|> Shared : implements IBaseRepository
+IUserRepository ..|> Shared : implements IBaseRepository
+Organization ..> OrganizationName : uses
+Organization ..|> Shared : implements IAuditableEntity
+Organization *-- OrganizationName : contains
+Organization *-- OrganizationStatus : contains
+Organization *-- Shared : contains OrganizationId
+OrganizationRepository ..> CancellationToken : uses
+OrganizationRepository ..> Organization : uses
+OrganizationRepository ..> Shared : uses OrganizationId
+OrganizationRepository *-- Shared : contains AppDbContext
+OrganizationsController ..> CancellationToken : uses
+OrganizationsController ..> CreateOrganizationResource : uses
+OrganizationsController ..> UpdateOrganizationResource : uses
+OrganizationsController *-- IIamCommandService : contains
+OrganizationsController *-- IIamQueryService : contains
+OrganizationsController *-- Shared : contains ProblemDetailsFactory
+TokenService ..> User : uses
+TokenService *-- "IOptions<TokenSettings>" : contains
+TokenService *-- TokenSettings : contains
+User ..> Email : uses
+User ..> PasswordHash : uses
+User ..> RoleTier : uses
+User ..> Shared : uses FullName
+User ..> Shared : uses OrganizationId
+User *-- Email : contains
+User *-- PasswordHash : contains
+User *-- RoleTier : contains
+User *-- Shared : contains FullName
+User *-- Shared : contains OrganizationId
+User *-- Shared : contains UserId
+UserRepository ..> CancellationToken : uses
+UserRepository ..> Shared : uses UserId
+UserRepository ..> User : uses
+UserRepository *-- Shared : contains AppDbContext
+UsersController ..> CancellationToken : uses
+UsersController ..> SignInResource : uses
+UsersController ..> SignUpResource : uses
+UsersController *-- IIamCommandService : contains
+UsersController *-- IIamQueryService : contains
+UsersController *-- Shared : contains ProblemDetailsFactory
+@enduml
