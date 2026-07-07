@@ -3,7 +3,8 @@ skinparam monochrome false
 left to right direction
 
     package "SafeRoute" {
-        package "Fleet" {        package "Interfaces" {
+        package "Fleet" {
+            package "Interfaces" {
                 package "Rest" {
                     class "RouteCompatibilityController" as RouteCompatibilityController <<Resource>> {
                         +Context: AppDbContext
@@ -100,7 +101,7 @@ left to right direction
                     }
                 }
             }
-        package "Infrastructure" {
+            package "Infrastructure" {
                 package "Persistence" {
                     package "EntityFrameworkCore" {
                         package "Repositories" {
@@ -115,7 +116,6 @@ left to right direction
                     }
                 }
             }
-
         }
     }
 
@@ -124,7 +124,6 @@ package "Shared" as Shared { }
 ' ─── Relationships ───
 AssignmentResource *-- "IReadOnlyList<string>" : contains
 DefineServiceDaysResource *-- "IReadOnlyList<string>" : contains
-IRouteRepository ..|> Shared : implements IBaseRepository
 RouteCompatibilityController ..> CancellationToken : uses
 RouteCompatibilityController ..> DbCommand : handles
 RouteCompatibilityController ..> DbConnection : uses

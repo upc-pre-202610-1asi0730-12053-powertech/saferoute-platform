@@ -3,7 +3,8 @@ skinparam monochrome false
 left to right direction
 
     package "SafeRoute" {
-        package "Fleet" {        package "Domain" {
+        package "Fleet" {
+            package "Domain" {
                 package "Model" {
                     class "FleetError" as FleetError {
                         +Id: Guid
@@ -272,7 +273,7 @@ left to right direction
 
                 }
             }
-        package "Application" {
+            package "Application" {
                 package "QueryServices" {
                     interface "IRouteQueryService" as IRouteQueryService <<ApplicationService>> {
                         +Validate(): bool
@@ -301,7 +302,6 @@ left to right direction
                     }
                 }
             }
-
         }
     }
 

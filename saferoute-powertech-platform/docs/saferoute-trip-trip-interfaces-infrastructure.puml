@@ -3,68 +3,7 @@ skinparam monochrome false
 left to right direction
 
     package "SafeRoute" {
-        package "Trip" {        package "Interfaces" {
-                package "Rest" {
-                    class "TripsController" as TripsController <<Resource>> {
-                        +TripCommandService: ITripCommandService
-                        +TripQueryService: ITripQueryService
-                        +CreateTrip(CreateTripResource resource, CancellationToken cancellationToken): Task<IActionResult>
-                        +StartTrip(Guid tripId, CancellationToken cancellationToken): Task<IActionResult>
-                    }
-
-                    package "Resources" {
-                        class "CreateTripResource" as CreateTripResource <<Resource>> {
-                            +OrganizationId: string
-                            +RouteId: string
-                            +Validate(): bool
-                            +ToString(): string
-                        }
-
-                        class "TripResource" as TripResource <<Resource>> {
-                            +Id: string
-                            +OrganizationId: string
-                            +Validate(): bool
-                            +ToString(): string
-                        }
-
-                        class "SetBoardingStatusResource" as SetBoardingStatusResource <<Resource>> {
-                            +ChildId: string
-                            +BoardingState: string
-                            +Validate(): bool
-                            +ToString(): string
-                        }
-
-                        class "ReportIncidentResource" as ReportIncidentResource <<Resource>> {
-                            +Description: string
-                            +CreatedAt: DateTime
-                            +Validate(): bool
-                            +ToString(): string
-                        }
-
-                    }
-                    package "Transform" {
-                        class "SetBoardingStatusCommandFromResourceAssembler" as SetBoardingStatusCommandFromResourceAssembler <<Resource>> {
-                            +Id: Guid
-                            +CreatedAt: DateTime
-                            +ToCommandFromResource(Guid tripId, SetBoardingStatusResource resource): SetBoardingStatusCommand
-                            +ToString(): string
-                        }
-
-                    }
-                }
-            }
-        package "Infrastructure" {
-                package "Repositories" {
-                    class "TripRepository" as TripRepository <<Repository>> {
-                        +Context: AppDbContext
-                        +CreatedAt: DateTime
-                        +FindByTripIdAsync(TripId tripId, CancellationToken cancellationToken): Task<TripAggregate?>
-                        +FindByRouteIdAsync(RouteId routeId, CancellationToken cancellationToken): Task<IEnumerable<TripAggregate>>
-                    }
-
-                }
-            }
-
+        package "Trip" {
             package "Interfaces" {
                 package "Rest" {
                     class "TripsController" as TripsController <<Resource>> {
@@ -115,13 +54,23 @@ left to right direction
                     }
                 }
             }
+            package "Infrastructure" {
+                package "Repositories" {
+                    class "TripRepository" as TripRepository <<Repository>> {
+                        +Context: AppDbContext
+                        +CreatedAt: DateTime
+                        +FindByTripIdAsync(TripId tripId, CancellationToken cancellationToken): Task<TripAggregate?>
+                        +FindByRouteIdAsync(RouteId routeId, CancellationToken cancellationToken): Task<IEnumerable<TripAggregate>>
+                    }
+
+                }
+            }
         }
     }
 
 package "Shared" as Shared { }
 
 ' ─── Relationships ───
-ITripRepository ..|> Shared : implements IBaseRepository
 SetBoardingStatusCommandFromResourceAssembler ..> SetBoardingStatusCommand : uses
 SetBoardingStatusCommandFromResourceAssembler ..> SetBoardingStatusResource : uses
 TripRepository ..> CancellationToken : uses

@@ -3,7 +3,8 @@ skinparam monochrome false
 left to right direction
 
     package "SafeRoute" {
-        package "Trip" {        package "Domain" {
+        package "Trip" {
+            package "Domain" {
                 package "Model" {
                     class "TripError" as TripError {
                         +Id: Guid
@@ -176,7 +177,7 @@ left to right direction
 
                 }
             }
-        package "Application" {
+            package "Application" {
                 package "CommandServices" {
                     interface "ITripCommandService" as ITripCommandService <<ApplicationService>> {
                         +Validate(): bool
@@ -205,57 +206,6 @@ left to right direction
                             +CreatedAt: DateTime
                             +Handle(GetTripByIdQuery query, CancellationToken cancellationToken): Task<TripAggregate?>
                             +Handle(GetAllTripsQuery query, CancellationToken cancellationToken): Task<IEnumerable<TripAggregate>>
-                        }
-
-                    }
-                }
-            }
-
-            package "Interfaces" {
-                package "Rest" {
-                    class "TripsController" as TripsController <<Resource>> {
-                        +TripCommandService: ITripCommandService
-                        +TripQueryService: ITripQueryService
-                        +CreateTrip(CreateTripResource resource, CancellationToken cancellationToken): Task<IActionResult>
-                        +StartTrip(Guid tripId, CancellationToken cancellationToken): Task<IActionResult>
-                    }
-
-                    package "Resources" {
-                        class "CreateTripResource" as CreateTripResource <<Resource>> {
-                            +OrganizationId: string
-                            +RouteId: string
-                            +Validate(): bool
-                            +ToString(): string
-                        }
-
-                        class "TripResource" as TripResource <<Resource>> {
-                            +Id: string
-                            +OrganizationId: string
-                            +Validate(): bool
-                            +ToString(): string
-                        }
-
-                        class "SetBoardingStatusResource" as SetBoardingStatusResource <<Resource>> {
-                            +ChildId: string
-                            +BoardingState: string
-                            +Validate(): bool
-                            +ToString(): string
-                        }
-
-                        class "ReportIncidentResource" as ReportIncidentResource <<Resource>> {
-                            +Description: string
-                            +CreatedAt: DateTime
-                            +Validate(): bool
-                            +ToString(): string
-                        }
-
-                    }
-                    package "Transform" {
-                        class "SetBoardingStatusCommandFromResourceAssembler" as SetBoardingStatusCommandFromResourceAssembler <<Resource>> {
-                            +Id: Guid
-                            +CreatedAt: DateTime
-                            +ToCommandFromResource(Guid tripId, SetBoardingStatusResource resource): SetBoardingStatusCommand
-                            +ToString(): string
                         }
 
                     }
