@@ -1,0 +1,42 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: saferoute-backend:2.0.0
+    container_name: saferoute-backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: server=mysql;port=3306;database=saferoute_appweb;user=saferoute;password=saferoute_password;SslMode=None;
+      TokenSettings__Secret: seFpUpQtbsWoLAGxnzuWT6fyb7SShB1MCYe+jf/hTSlfLy8DqxTk+NNGT5ViXaaO
+      TokenSettings__ExpirationDays: 7
+      Swagger__Enabled: true
+      HttpsRedirection__Enabled: false
+    ports:
+      - "8080:8080"
+
+  mysql:
+    image: mysql:8.4
+    container_name: saferoute-mysql
+    environment:
+      MYSQL_DATABASE: saferoute_appweb
+      MYSQL_USER: saferoute
+      MYSQL_PASSWORD: saferoute_password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - saferoute-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -usaferoute -psaferoute_password --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  saferoute-mysql-data:

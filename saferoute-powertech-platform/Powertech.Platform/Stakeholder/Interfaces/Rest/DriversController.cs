@@ -1,5 +1,10 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using Powertech.Platform.Iam.Application.CommandServices;
+using Powertech.Platform.Iam.Domain.Model;
+using Powertech.Platform.Iam.Domain.Model.Commands;
+using Powertech.Platform.Iam.Domain.Model.ValueObjects;
+using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 using Powertech.Platform.Shared.Interfaces.Rest.ProblemDetails;
 using Powertech.Platform.Stakeholder.Application.CommandServices;
 using Powertech.Platform.Stakeholder.Application.QueryServices;
@@ -19,14 +24,42 @@ namespace Powertech.Platform.Stakeholder.Interfaces.Rest;
 public class DriversController(
     IStakeholderCommandService commandService,
     IStakeholderQueryService queryService,
+    IIamCommandService iamCommandService,
+    AppDbContext context,
     ProblemDetailsFactory problemDetailsFactory) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> CreateDriver(CreateDriverResource resource, CancellationToken cancellationToken)
     {
-        var command = new CreateDriverCommand(resource.OrganizationId, resource.UserId, resource.FirstName,
+        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+
+        var userId = resource.UserId;
+        if (userId is null || userId == Guid.Empty)
+        {
+            if (string.IsNullOrWhiteSpace(resource.Password))
+                return CreateIamProblem(StatusCodes.Status400BadRequest, IamError.InvalidIamData,
+                    "A password is required to create the driver sign-in account.");
+
+            var userResult = await iamCommandService.Handle(new SignUpCommand(resource.FirstName, resource.LastName,
+                resource.Email, resource.Password, RoleTier.Driver, resource.OrganizationId), cancellationToken);
+
+            if (userResult.IsFailure)
+                return CreateIamProblem(ToIamStatusCode((IamError)userResult.Error!), (IamError)userResult.Error!,
+                    userResult.Message);
+
+            userId = userResult.Value!.Id.Identifier;
+        }
+
+        var command = new CreateDriverCommand(resource.OrganizationId, userId.Value, resource.FirstName,
             resource.LastName, resource.Email, resource.PhoneNumber, resource.LicenseNumber);
         var result = await commandService.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return StakeholderActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
+                driver => Ok(StakeholderResourceFromEntityAssembler.ToResourceFromEntity(driver)));
+
+        await transaction.CommitAsync(cancellationToken);
+
         return StakeholderActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
             driver => CreatedAtAction(nameof(GetDriverById), new { driverId = driver.Id.Identifier },
                 StakeholderResourceFromEntityAssembler.ToResourceFromEntity(driver)));
@@ -76,4 +109,16 @@ public class DriversController(
         return StakeholderActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
             driver => Ok(StakeholderResourceFromEntityAssembler.ToResourceFromEntity(driver)));
     }
+
+    private IActionResult CreateIamProblem(int statusCode, IamError error, string detail) =>
+        problemDetailsFactory.CreateProblemDetails(this, statusCode, error, detail);
+
+    private static int ToIamStatusCode(IamError error) => error switch
+    {
+        IamError.UserNotFound or IamError.OrganizationNotFound => StatusCodes.Status404NotFound,
+        IamError.EmailAlreadyRegistered => StatusCodes.Status409Conflict,
+        IamError.InvalidCredentials or IamError.InvalidIamData => StatusCodes.Status400BadRequest,
+        IamError.OperationCancelled => StatusCodes.Status409Conflict,
+        _ => StatusCodes.Status500InternalServerError
+    };
 }

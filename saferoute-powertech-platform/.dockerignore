@@ -1,0 +1,15 @@
+.git
+.gitignore
+.idea
+.vs
+**/.DS_Store
+**/bin
+**/obj
+**/TestResults
+**/*.user
+**/*.suo
+**/*.DotSettings.user
+docs
+artifacts
+docker-compose*.yml
+README.md

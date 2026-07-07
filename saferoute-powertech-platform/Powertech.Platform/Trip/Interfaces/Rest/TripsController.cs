@@ -1,15 +1,22 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Powertech.Platform.Notifications.Domain.Model.Aggregates;
+using Powertech.Platform.Notifications.Domain.Model.ValueObjects;
 using Powertech.Platform.Resources.Errors;
+using Powertech.Platform.Shared.Domain.Model.ValueObjects;
+using Powertech.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 using Powertech.Platform.Shared.Interfaces.Rest.ProblemDetails;
 using Powertech.Platform.Trip.Application.CommandServices;
 using Powertech.Platform.Trip.Application.QueryServices;
+using Powertech.Platform.Trip.Domain.Model;
 using Powertech.Platform.Trip.Domain.Model.Commands;
 using Powertech.Platform.Trip.Domain.Model.Queries;
 using Powertech.Platform.Trip.Interfaces.Rest.Resources;
 using Powertech.Platform.Trip.Interfaces.Rest.Transform;
 using Swashbuckle.AspNetCore.Annotations;
+using TripAggregate = Powertech.Platform.Trip.Domain.Model.Aggregates.Trip;
 
 namespace Powertech.Platform.Trip.Interfaces.Rest;
 
@@ -33,6 +40,7 @@ public class TripsController(
     ITripCommandService tripCommandService,
     ITripQueryService tripQueryService,
     IStringLocalizer<ErrorMessages> errorLocalizer,
+    AppDbContext context,
     ProblemDetailsFactory problemDetailsFactory)
     : ControllerBase
 {
@@ -133,5 +141,36 @@ public class TripsController(
         var result = await tripCommandService.Handle(new CompleteTripCommand(tripId), cancellationToken);
         return TripActionResultAssembler.ToActionResult(this, result, problemDetailsFactory,
             trip => Ok(TripResourceFromEntityAssembler.ToResourceFromEntity(trip)));
+    }
+
+    /// <summary>Deletes a trip and notification records associated with it.</summary>
+    [HttpDelete("{tripId:guid}")]
+    [SwaggerOperation("Delete Trip", "Deletes a trip and its notification records.", OperationId = "DeleteTrip")]
+    [SwaggerResponse(204, "The trip was deleted.")]
+    [SwaggerResponse(404, "The trip was not found.")]
+    public async Task<IActionResult> DeleteTrip(Guid tripId, CancellationToken cancellationToken)
+    {
+        var tripValue = new TripId(tripId);
+        var trip = await context.Set<TripAggregate>()
+            .FirstOrDefaultAsync(item => item.Id == tripValue, cancellationToken);
+
+        if (trip is null)
+            return problemDetailsFactory.CreateProblemDetails(this, StatusCodes.Status404NotFound,
+                TripError.TripNotFound, errorLocalizer[nameof(TripError.TripNotFound)]);
+
+        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+
+        var notificationTripId = new NotificationId(tripId);
+        var notifications = await context.Set<Notification>()
+            .Where(notification => notification.TripId == notificationTripId)
+            .ToListAsync(cancellationToken);
+
+        context.RemoveRange(notifications);
+        context.Remove(trip);
+
+        await context.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+
+        return NoContent();
     }
 }

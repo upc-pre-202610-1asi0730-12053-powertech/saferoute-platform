@@ -54,6 +54,9 @@ public class RouteCompatibilityController(
             vehicle,
             assignment);
 
+        if (assignment is not null)
+            await SynchronizeTripsAsync(routeId, assignment.DriverId, cancellationToken);
+
         await context.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
 
@@ -102,6 +105,17 @@ public class RouteCompatibilityController(
             .AsSplitQuery()
             .FirstOrDefaultAsync(route => route.Id == new RouteId(routeId), cancellationToken);
 
+    private async Task SynchronizeTripsAsync(Guid routeId, DriverId driverId, CancellationToken cancellationToken)
+    {
+        var routeValue = new RouteId(routeId);
+        var trips = await context.Set<TripAggregate>()
+            .Where(trip => trip.RouteId == routeValue)
+            .ToListAsync(cancellationToken);
+
+        foreach (var trip in trips.Where(trip => !trip.State.IsCompleted()))
+            trip.ReassignDriver(driverId);
+    }
+
     private IActionResult CreateProblem(int statusCode, FleetError error) =>
         problemDetailsFactory.CreateProblemDetails(this, statusCode, error, error.ToString());
 
@@ -110,7 +124,7 @@ public class RouteCompatibilityController(
         var source = waypoints ?? [];
         return source.Select((waypoint, index) =>
             new Stop(
-                new StopId(ParseGuidOrNew(waypoint.Id)),
+                StopId.New(),
                 string.IsNullOrWhiteSpace(waypoint.Name) ? $"Parada {index + 1}" : waypoint.Name.Trim(),
                 new Coordinates(waypoint.Latitude ?? waypoint.Lat ?? 0, waypoint.Longitude ?? waypoint.Lng ?? 0),
                 new StopOrder(waypoint.Order ?? index + 1))).ToList();
@@ -120,12 +134,8 @@ public class RouteCompatibilityController(
     {
         if (string.IsNullOrWhiteSpace(resource.VehiclePlate)) return null;
 
-        var vehicleId = Guid.TryParse(resource.VehicleId, out var parsedVehicleId)
-            ? new VehicleId(parsedVehicleId)
-            : VehicleId.New();
-
         return new Vehicle(
-            vehicleId,
+            VehicleId.New(),
             organizationId,
             resource.VehiclePlate.Trim(),
             string.IsNullOrWhiteSpace(resource.VehicleModel) ? "Vehicle" : resource.VehicleModel.Trim(),
@@ -205,6 +215,4 @@ public class RouteCompatibilityController(
             ? new ServiceDays(serviceDays)
             : new ServiceDays(["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]);
 
-    private static Guid ParseGuidOrNew(string? value) =>
-        Guid.TryParse(value, out var id) ? id : Guid.NewGuid();
 }

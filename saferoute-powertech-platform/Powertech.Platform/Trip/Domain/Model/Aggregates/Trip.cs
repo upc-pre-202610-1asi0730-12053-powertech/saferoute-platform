@@ -118,6 +118,17 @@ public class Trip
         State = new TripState(TripState.Completed);
         EndTime = DateTimeOffset.UtcNow;
     }
+
+    /// <summary>Updates the driver assigned to this trip when its route assignment changes.</summary>
+    /// <param name="driverId">The new operating driver.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the trip is already completed.</exception>
+    public void ReassignDriver(DriverId driverId)
+    {
+        if (State.IsCompleted())
+            throw new InvalidOperationException("Completed trips cannot be reassigned.");
+
+        DriverId = driverId;
+    }
     
     /// <summary>
     ///     Records or updates the boarding status of a child. Idempotent per child: a subsequent
