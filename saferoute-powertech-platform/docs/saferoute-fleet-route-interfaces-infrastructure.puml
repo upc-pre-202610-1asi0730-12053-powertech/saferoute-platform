@@ -1,0 +1,157 @@
+@startuml
+skinparam monochrome false
+left to right direction
+
+    package "SafeRoute" {
+        package "Fleet" {        package "Interfaces" {
+                package "Rest" {
+                    class "RouteCompatibilityController" as RouteCompatibilityController <<Resource>> {
+                        +Context: AppDbContext
+                        +ProblemDetailsFactory: ProblemDetailsFactory
+                        +UpdateRoute(Guid routeId, UpdateRouteResource resource, CancellationToken cancellationToken): Task<IActionResult>
+                        +DeleteRoute(Guid routeId, CancellationToken cancellationToken): Task<IActionResult>
+                    }
+
+                    class "RoutesController" as RoutesController <<Resource>> {
+                        +RouteCommandService: IRouteCommandService
+                        +RouteQueryService: IRouteQueryService
+                        +CreateRoute(CreateRouteResource resource, CancellationToken cancellationToken): Task<IActionResult>
+                        +GetRouteById(Guid routeId, CancellationToken cancellationToken): Task<IActionResult>
+                    }
+
+                    package "Resources" {
+                        class "CreateRouteResource" as CreateRouteResource <<Resource>> {
+                            +OrganizationId: string
+                            +Name: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "RouteResource" as RouteResource <<Resource>> {
+                            +Id: string
+                            +OrganizationId: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "UpdateRouteResource" as UpdateRouteResource <<Resource>> {
+                            +Name: string?
+                            +Status: string?
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "RouteWaypointResource" as RouteWaypointResource <<Resource>> {
+                            +Id: string?
+                            +Name: string?
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AddStopResource" as AddStopResource <<Resource>> {
+                            +Name: string
+                            +Latitude: double
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AssignVehicleResource" as AssignVehicleResource <<Resource>> {
+                            +Plate: string
+                            +Model: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AssignDriverResource" as AssignDriverResource <<Resource>> {
+                            +DriverId: string
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AssignStudentsResource" as AssignStudentsResource <<Resource>> {
+                            +ChildId: string
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "DefineServiceDaysResource" as DefineServiceDaysResource <<Resource>> {
+                            +Days: IReadOnlyList<string>
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "SetDepartureTimeResource" as SetDepartureTimeResource <<Resource>> {
+                            +DepartureTime: string
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AssignmentResource" as AssignmentResource <<Resource>> {
+                            +Id: string
+                            +DriverId: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                }
+            }
+        package "Infrastructure" {
+                package "Persistence" {
+                    package "EntityFrameworkCore" {
+                        package "Repositories" {
+                            class "RouteRepository" as RouteRepository <<Repository>> {
+                                +Context: AppDbContext
+                                +CreatedAt: DateTime
+                                +FindByRouteIdAsync(RouteId routeId, CancellationToken cancellationToken): Task<Route?>
+                                +FindByOrganizationIdAsync(OrganizationId organizationId, CancellationToken cancellationToken): Task<IEnumerable<Route>>
+                            }
+
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+package "Shared" as Shared { }
+
+' ─── Relationships ───
+AssignmentResource *-- "IReadOnlyList<string>" : contains
+DefineServiceDaysResource *-- "IReadOnlyList<string>" : contains
+IRouteRepository ..|> Shared : implements IBaseRepository
+RouteCompatibilityController ..> CancellationToken : uses
+RouteCompatibilityController ..> DbCommand : handles
+RouteCompatibilityController ..> DbConnection : uses
+RouteCompatibilityController ..> DbDataReader : uses
+RouteCompatibilityController ..> FleetError : uses
+RouteCompatibilityController ..> UpdateRouteResource : uses
+RouteCompatibilityController *-- Shared : contains AppDbContext
+RouteCompatibilityController *-- Shared : contains ProblemDetailsFactory
+RouteRepository ..> CancellationToken : uses
+RouteRepository ..> Route : uses
+RouteRepository ..> Shared : uses OrganizationId
+RouteRepository ..> Shared : uses RouteId
+RouteRepository *-- Shared : contains AppDbContext
+RouteResource *-- AssignmentResource : contains
+RoutesController ..> AddStopResource : uses
+RoutesController ..> AssignDriverResource : uses
+RoutesController ..> AssignStudentsResource : uses
+RoutesController ..> AssignVehicleResource : uses
+RoutesController ..> CancellationToken : uses
+RoutesController ..> CreateRouteResource : uses
+RoutesController ..> DefineServiceDaysResource : uses
+RoutesController ..> SetDepartureTimeResource : uses
+RoutesController *-- "IStringLocalizer<ErrorMessages>" : contains
+RoutesController *-- IRouteCommandService : contains
+RoutesController *-- IRouteQueryService : contains
+RoutesController *-- Shared : contains ProblemDetailsFactory
+RouteWaypointResource *-- "IReadOnlyList<string>" : contains
+UpdateRouteResource *-- "IReadOnlyList<RouteWaypointResource>" : contains
+UpdateRouteResource *-- "IReadOnlyList<string>" : contains
+@enduml

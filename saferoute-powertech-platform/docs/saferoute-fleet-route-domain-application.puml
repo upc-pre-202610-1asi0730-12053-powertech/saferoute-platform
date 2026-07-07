@@ -1,0 +1,370 @@
+@startuml
+skinparam monochrome false
+left to right direction
+
+    package "SafeRoute" {
+        package "Fleet" {        package "Domain" {
+                package "Model" {
+                    class "FleetError" as FleetError {
+                        +Id: Guid
+                        +CreatedAt: DateTime
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                    package "Aggregates" {
+                        class "Route" as Route {
+                            +Id: RouteId
+                            +OrganizationId: OrganizationId
+                            +Name: string
+                            +State: RouteState
+                            +DepartureTime: DepartureTime?
+                            +ServiceDays: ServiceDays?
+                            +Vehicle: Vehicle?
+                            +Assignment: Assignment?
+                            -_stops: List<Stop>
+                            +Stops: IReadOnlyCollection<Stop>
+                            +DefineRoute(string name): void
+                            +AddStop(string name, Coordinates coordinates): Stop
+                            +RemoveStop(StopId stopId): void
+                            +AssignVehicle(Vehicle vehicle): void
+                            +AssignDriver(DriverId driverId): void
+                            +AssignChild(ChildId childId): void
+                            +RemoveChild(ChildId childId): void
+                            +DefineServiceDays(ServiceDays serviceDays): void
+                            +SetDepartureTime(DepartureTime departureTime): void
+                            +Activate(): void
+                            +Deactivate(): void
+                            +GetStopSequence(): IReadOnlyList<Stop>
+                            +GetTotalStops(): int
+                            -EnsureDraft(): void
+                            -ResequenceStops(): void
+                        }
+
+                    }
+                    package "Commands" {
+                        class "ActivateRouteCommand" as ActivateRouteCommand <<Command>> {
+                            +RouteId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AssignStudentsToRouteCommand" as AssignStudentsToRouteCommand <<Command>> {
+                            +RouteId: Guid
+                            +ChildId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "CreateRouteCommand" as CreateRouteCommand <<Command>> {
+                            +OrganizationId: Guid
+                            +Name: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "DeactivateRouteCommand" as DeactivateRouteCommand <<Command>> {
+                            +RouteId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "RemoveStudentsFromRouteCommand" as RemoveStudentsFromRouteCommand <<Command>> {
+                            +RouteId: Guid
+                            +ChildId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AddStopCommand" as AddStopCommand <<Command>> {
+                            +RouteId: Guid
+                            +Name: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "RemoveStopCommand" as RemoveStopCommand <<Command>> {
+                            +RouteId: Guid
+                            +StopId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AssignVehicleCommand" as AssignVehicleCommand <<Command>> {
+                            +RouteId: Guid
+                            +Plate: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "AssignDriverCommand" as AssignDriverCommand <<Command>> {
+                            +RouteId: Guid
+                            +DriverId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "DefineServiceDaysCommand" as DefineServiceDaysCommand <<Command>> {
+                            +RouteId: Guid
+                            +Days: IEnumerable<string>
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "SetDepartureTimeCommand" as SetDepartureTimeCommand <<Command>> {
+                            +RouteId: Guid
+                            +DepartureTime: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "Events" {
+                        class "RouteActivatedEvent" as RouteActivatedEvent <<Event>> {
+                            +RouteId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "RouteDefinedEvent" as RouteDefinedEvent <<Event>> {
+                            +RouteId: Guid
+                            +OrganizationId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "VehicleAssignedToRouteEvent" as VehicleAssignedToRouteEvent <<Event>> {
+                            +RouteId: Guid
+                            +Plate: string
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "Event" {
+                        class "StudentAssignedToRouteEvent" as StudentAssignedToRouteEvent <<Event>> {
+                            +RouteId: Guid
+                            +ChildId: Guid
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "Queries" {
+                        class "GetAllRoutesQuery" as GetAllRoutesQuery <<Query>> {
+                            +Id: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetRouteByIdQuery" as GetRouteByIdQuery <<Query>> {
+                            +RouteId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                        class "GetRoutesByOrganizationIdQuery" as GetRoutesByOrganizationIdQuery <<Query>> {
+                            +OrganizationId: Guid
+                            +CreatedAt: DateTime
+                            +Validate(): bool
+                            +ToString(): string
+                        }
+
+                    }
+                    package "ValueObjects" {
+                        class "RouteState" as RouteState {
+                            +Value: string
+                            +CreateDraft(): RouteState
+                            +IsDraft(): bool
+                            +IsActive(): bool
+                            +IsInactive(): bool
+                            +ToString(): string
+                        }
+
+                        class "DepartureTime" as DepartureTime {
+                            +Value: TimeOnly
+                            +IsValid(): bool
+                            +ToString(): string
+                        }
+
+                        class "ServiceDays" as ServiceDays {
+                            +Value: string
+                            +GetDays(): IReadOnlyList<string>
+                            +IncludesDay(string day): bool
+                            +IsValid(): bool
+                            +ToString(): string
+                        }
+
+                        class "StopId" as StopId {
+                            +Identifier: Guid
+                            +New(): StopId
+                            +ToString(): string
+                        }
+
+                        class "VehicleId" as VehicleId {
+                            +Identifier: Guid
+                            +New(): VehicleId
+                            +ToString(): string
+                        }
+
+                        class "AssignmentId" as AssignmentId {
+                            +Identifier: Guid
+                            +New(): AssignmentId
+                            +ToString(): string
+                        }
+
+                        class "StopOrder" as StopOrder {
+                            +Position: int
+                            +IsFirst(): bool
+                            +GetPosition(): int
+                            +ToString(): string
+                        }
+
+                    }
+                    package "Entities" {
+                        class "Vehicle" as Vehicle {
+                            +Id: VehicleId
+                            +OrganizationId: OrganizationId
+                            +Plate: string
+                            +Model: string
+                            +Brand: string
+                            +Capacity: int
+                            +IsAvailable(): bool
+                            +GetPlate(): string
+                            +GetCapacity(): int
+                            +UpdateDetails(string model, string brand): void
+                        }
+
+                        class "Assignment" as Assignment {
+                            +Id: AssignmentId
+                            +DriverId: DriverId
+                            +ChildIds: List<Guid>
+                            +Children: IReadOnlyCollection<ChildId>
+                            +AssignDriver(DriverId driverId): void
+                            +AssignChild(ChildId childId): void
+                            +RemoveChild(ChildId childId): void
+                            +GetDriverId(): DriverId
+                            +GetChildCount(): int
+                        }
+
+                        class "Stop" as Stop {
+                            +Id: StopId
+                            +Name: string
+                            +Coordinates: Coordinates
+                            +Order: StopOrder
+                            +IsFirst(): bool
+                            +UpdateCoordinates(Coordinates coordinates): void
+                            +Reorder(StopOrder order): void
+                        }
+
+                    }
+                }
+                package "Repositories" {
+                    interface "IRouteRepository" as IRouteRepository <<Repository>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+            }
+        package "Application" {
+                package "QueryServices" {
+                    interface "IRouteQueryService" as IRouteQueryService <<ApplicationService>> {
+                        +Validate(): bool
+                        +ToString(): string
+                    }
+
+                }
+                package "Internal" {
+                    package "CommandServices" {
+                        class "RouteCommandService" as RouteCommandService <<ApplicationService>> {
+                            +RouteRepository: IRouteRepository
+                            +UnitOfWork: IUnitOfWork
+                            +Handle(CreateRouteCommand command, CancellationToken cancellationToken): Task<Result<Route>>
+                            +Handle(AddStopCommand command, CancellationToken cancellationToken): Task<Result<Route>>
+                        }
+
+                    }
+                    package "QueryServices" {
+                        class "RouteQueryService" as RouteQueryService <<ApplicationService>> {
+                            +RouteRepository: IRouteRepository
+                            +CreatedAt: DateTime
+                            +Handle(GetRouteByIdQuery query, CancellationToken cancellationToken): Task<Route?>
+                            +Handle(GetAllRoutesQuery query, CancellationToken cancellationToken): Task<IEnumerable<Route>>
+                        }
+
+                    }
+                }
+            }
+
+        }
+    }
+
+package "Shared" as Shared { }
+
+' ─── Relationships ───
+Assignment ..> Shared : uses ChildId
+Assignment ..> Shared : uses DriverId
+Assignment *-- AssignmentId : contains
+Assignment *-- Shared : contains ChildId
+Assignment *-- Shared : contains DriverId
+DepartureTime ..> TimeOnly : uses
+DepartureTime *-- TimeOnly : contains
+IRouteRepository ..|> Shared : implements IBaseRepository
+Route ..> "IReadOnlyList<Stop>" : uses
+Route ..> CreateRouteCommand : uses
+Route ..> DepartureTime : uses
+Route ..> ServiceDays : uses
+Route ..> Shared : uses ChildId
+Route ..> Shared : uses Coordinates
+Route ..> Shared : uses DriverId
+Route ..> Shared : uses OrganizationId
+Route ..> Stop : uses
+Route ..> StopId : uses
+Route ..> Vehicle : uses
+Route *-- Assignment : contains
+Route *-- DepartureTime : contains
+Route *-- RouteState : contains
+Route *-- ServiceDays : contains
+Route *-- Shared : contains OrganizationId
+Route *-- Shared : contains RouteId
+Route *-- Stop : contains
+Route *-- Vehicle : contains
+RouteCommandService ..> "Action<Route>" : uses
+RouteCommandService ..> ActivateRouteCommand : handles
+RouteCommandService ..> AddStopCommand : handles
+RouteCommandService ..> AssignDriverCommand : handles
+RouteCommandService ..> AssignStudentsToRouteCommand : handles
+RouteCommandService ..> AssignVehicleCommand : handles
+RouteCommandService ..> CancellationToken : uses
+RouteCommandService ..> CreateRouteCommand : handles
+RouteCommandService ..> DeactivateRouteCommand : handles
+RouteCommandService ..> DefineServiceDaysCommand : handles
+RouteCommandService ..> RemoveStopCommand : handles
+RouteCommandService ..> RemoveStudentsFromRouteCommand : handles
+RouteCommandService ..> Route : uses
+RouteCommandService ..> SetDepartureTimeCommand : handles
+RouteCommandService *-- "IStringLocalizer<ErrorMessages>" : contains
+RouteCommandService *-- IRouteRepository : contains
+RouteCommandService *-- Shared : contains IUnitOfWork
+RouteQueryService ..> CancellationToken : uses
+RouteQueryService ..> GetAllRoutesQuery : handles
+RouteQueryService ..> GetRouteByIdQuery : handles
+RouteQueryService ..> GetRoutesByOrganizationIdQuery : handles
+RouteQueryService ..> Route : uses
+RouteQueryService *-- IRouteRepository : contains
+ServiceDays ..> "IReadOnlyList<string>" : uses
+Stop ..> Shared : uses Coordinates
+Stop ..> StopOrder : uses
+Stop *-- Shared : contains Coordinates
+Stop *-- StopId : contains
+Stop *-- StopOrder : contains
+Vehicle ..> Shared : uses OrganizationId
+Vehicle *-- Shared : contains OrganizationId
+Vehicle *-- VehicleId : contains
+@enduml
