@@ -71,17 +71,10 @@ package "SafeRoute.Shared.Domain.Model.ValueObjects" {
   }
 }
 
-' ─── Referencias a otros Bounded Contexts ────────────────────────────────────
-package "SafeRoute.IAM.Domain.Model.Aggregates" {
-  entity "User" as User <<AggregateRoot>> {
-  }
-}
-
 SubscriptionPrincipal "1" --> "1" SharedSubscriptionId : identified by
 SubscriptionPrincipal "1" --> "1" SharedOrganizationId : belongs to
 SubscriptionPrincipal "1" --> "1" SharedPlanId : references
 SubscriptionPrincipal "1" --> "1" SubscriptionState : has
-SubscriptionPrincipal "1" --> "1" User : owned by
 Plan "1" --> "1" SharedPlanId : identified by
 Plan "1" --> "1" PlanTier : categorized by
 Plan "1" --> "1" RouteQuota : limits

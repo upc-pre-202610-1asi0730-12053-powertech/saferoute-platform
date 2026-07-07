@@ -4,106 +4,66 @@ skinparam monochrome false
 package "SafeRoute.Notifications.Domain.Model.Aggregates" {
   entity "Notification" as Notification <<AggregateRoot>> {
     -id: NotificationId
-    -organizationId: OrganizationId
-    -parentId: ParentId
-    -tripId: TripId
+    -organizationId: NotificationId
+    -parentId: NotificationId
+    -tripId: NotificationId
     -category: NotificationCategory
     -deliveryState: NotificationDeliveryState
     -message: NotificationMessage
     -sentAt: DateTimeOffset
-    -alerts: IReadOnlyCollection<Alert>
-    -announcements: IReadOnlyCollection<Announcement>
-    +Queue(): void
+    -alerts: ICollection<Alert>
+    -announcements: ICollection<Announcement>
     +Dispatch(): void
     +MarkDelivered(): void
-    +TriggerAlert(panic: bool): void
-    +PublishAnnouncement(routeId: RouteId, message: NotificationMessage): void
-    +IsDelivered(): bool
-    +GetCategory(): string
-    +GetMessage(): string
+    +AddAlert(panic: bool): void
+    +AddAnnouncement(routeId: Guid, message: string): void
   }
 }
 
 package "SafeRoute.Notifications.Domain.Model.Entities" {
   entity "Alert" as Alert <<Entity>> {
     -id: AlertId
+    -notificationId: NotificationId
     -triggeredAt: DateTimeOffset
     -panic: bool
-    +Trigger(): void
-    +GetTriggeredAt(): DateTimeOffset
-    +IsPanic(): bool
   }
 
   entity "Announcement" as Announcement <<Entity>> {
     -id: AnnouncementId
-    -routeId: RouteId
+    -notificationId: NotificationId
+    -routeId: NotificationId
     -message: NotificationMessage
     -publishedAt: DateTimeOffset
-    +Publish(): void
-    +GetMessage(): string
-    +GetPublishedAt(): DateTimeOffset
   }
 }
 
 package "SafeRoute.Notifications.Domain.Model.ValueObjects" {
   class "NotificationId" as NotificationId <<ValueObject>> {
-    -value: Guid
-    +New(): NotificationId
-    +ToString(): string
+    -identifier: Guid
   }
 
   class "AlertId" as AlertId <<ValueObject>> {
-    -value: Guid
-    +New(): AlertId
-    +ToString(): string
+    -identifier: Guid
   }
 
   class "AnnouncementId" as AnnouncementId <<ValueObject>> {
-    -value: Guid
-    +New(): AnnouncementId
-    +ToString(): string
+    -identifier: Guid
   }
 
   class "NotificationCategory" as NotificationCategory <<ValueObject>> {
     -value: string
-    +IsBoarding(): bool
-    +IsArrival(): bool
-    +IsIncident(): bool
-    +IsPanic(): bool
-    +ToString(): string
   }
 
   class "NotificationDeliveryState" as NotificationDeliveryState <<ValueObject>> {
     -value: string
-    +IsQueued(): bool
-    +IsDispatched(): bool
-    +IsDelivered(): bool
-    +ToString(): string
   }
 
   class "NotificationMessage" as NotificationMessage <<ValueObject>> {
     -content: string
-    +IsValid(): bool
-    +ToString(): string
-  }
-}
-
-' ─── Shared ──────────────────────────────────────────────────────────────────
-package "SafeRoute.Shared.Domain.Model.ValueObjects" {
-  class "OrganizationId" as SharedOrganizationId <<ValueObject>> {
-  }
-  class "ParentId" as SharedParentId <<ValueObject>> {
-  }
-  class "TripId" as SharedTripId <<ValueObject>> {
-  }
-  class "RouteId" as SharedRouteId <<ValueObject>> {
   }
 }
 
 Notification "1" --> "1" NotificationId : identified by
-Notification "1" --> "1" SharedOrganizationId : belongs to
-Notification "1" --> "1" SharedParentId : sent to
-Notification "1" --> "1" SharedTripId : related to
 Notification "1" --> "1" NotificationCategory : categorized by
 Notification "1" --> "1" NotificationDeliveryState : has
 Notification "1" --> "1" NotificationMessage : contains
@@ -111,7 +71,6 @@ Notification "1" *--> "0..*" Alert : contains
 Notification "1" *--> "0..*" Announcement : contains
 Alert "1" --> "1" AlertId : identified by
 Announcement "1" --> "1" AnnouncementId : identified by
-Announcement "1" --> "1" SharedRouteId : belongs to
 Announcement "1" --> "1" NotificationMessage : contains
 
 @enduml

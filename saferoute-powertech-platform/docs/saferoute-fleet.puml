@@ -23,6 +23,7 @@ package "SafeRoute.Fleet.Domain.Model.Aggregates" {
     +SetDepartureTime(departureTime: DepartureTime): void
     +Activate(): void
     +Deactivate(): void
+    +ReplaceConfiguration(name: string, state: RouteState, departureTime: DepartureTime, serviceDays: ServiceDays): void
     +GetStopSequence(): IReadOnlyList<Stop>
     +GetTotalStops(): int
   }
@@ -93,20 +94,19 @@ package "SafeRoute.Fleet.Domain.Model.ValueObjects" {
   class "StopOrder" as StopOrder <<ValueObject>> {
     -position: int
     +IsFirst(): bool
-    +IsLast(): bool
     +GetPosition(): int
   }
 
   class "DepartureTime" as DepartureTime <<ValueObject>> {
-    -value: TimeSpan
+    -value: TimeOnly
     +IsValid(): bool
     +ToString(): string
   }
 
   class "ServiceDays" as ServiceDays <<ValueObject>> {
-    -days: List<string>
+    -value: string
     +IncludesDay(day: string): bool
-    +GetDays(): List<string>
+    +GetDays(): IReadOnlyList<string>
     +IsValid(): bool
   }
 }
@@ -128,11 +128,11 @@ package "SafeRoute.Shared.Domain.Model.ValueObjects" {
 Route "1" --> "1" SharedRouteId : identified by
 Route "1" --> "1" SharedOrganizationId : belongs to
 Route "1" --> "1" RouteState : has
-Route "1" --> "1" DepartureTime : has
-Route "1" --> "1" ServiceDays : has
-Route "1" --> "1" Vehicle : assigned to
-Route "1" --> "1" Assignment : has
-Route "1" *--> "1..*" Stop : has
+Route "1" --> "0..1" DepartureTime : has
+Route "1" --> "0..1" ServiceDays : has
+Route "1" --> "0..1" Vehicle : assigned to
+Route "1" --> "0..1" Assignment : has
+Route "1" *--> "0..*" Stop : has
 Stop "1" --> "1" StopId : identified by
 Stop "1" --> "1" SharedCoordinates : located at
 Stop "1" --> "1" StopOrder : ordered by

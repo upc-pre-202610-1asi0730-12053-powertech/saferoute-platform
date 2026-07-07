@@ -8,13 +8,13 @@ package "SafeRoute.Trip.Domain.Model.Aggregates" {
     -routeId: RouteId
     -driverId: DriverId
     -state: TripState
-    -startTime: DateTimeOffset
-    -endTime: DateTimeOffset
+    -startTime: DateTimeOffset?
+    -endTime: DateTimeOffset?
     -attendances: IReadOnlyCollection<Attendance>
     -incidents: IReadOnlyCollection<Incident>
     +Start(): void
     +Complete(): void
-    +RecordBoarding(childId: ChildId, state: BoardingState): void
+    +SetBoardingStatus(childId: ChildId, state: BoardingState): void
     +ReportIncident(description: IncidentDescription): void
     +GetAttendanceSummary(): IReadOnlyCollection<Attendance>
     +GetIncidentLog(): IReadOnlyCollection<Incident>
@@ -27,10 +27,10 @@ package "SafeRoute.Trip.Domain.Model.Entities" {
     -id: AttendanceId
     -childId: ChildId
     -boardingState: BoardingState
-    -boardedAt: DateTimeOffset
+    -boardedAt: DateTimeOffset?
     +UpdateBoardingState(state: BoardingState): void
     +IsBoarded(): bool
-    +GetBoardingTime(): DateTimeOffset
+    +GetBoardingTime(): DateTimeOffset?
   }
 
   entity "Incident" as Incident <<Entity>> {
@@ -73,7 +73,6 @@ package "SafeRoute.Trip.Domain.Model.ValueObjects" {
 
   class "IncidentDescription" as IncidentDescription <<ValueObject>> {
     -value: string
-    +IsValid(): bool
     +ToString(): string
   }
 }
